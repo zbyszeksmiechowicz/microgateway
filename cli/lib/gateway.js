@@ -20,14 +20,14 @@ Gateway.prototype.start = function start(options, cb) {
   const source = configLocations.getSourcePath(options.org, options.env);
   const cache = configLocations.getCachePath(options.org, options.env);
   const keys = { key: options.key, secret: options.secret };
-  const args = { target: cache, keys: keys,pluginDir:options.pluginDir };
+  const args = { target: cache, keys: keys, pluginDir: options.pluginDir };
   const that = this;
 
   if (cluster.isMaster) {
     edgeconfig.get({ source: source, keys: keys }, function (err, config) {
-      
+      args['config'] = config;
       if(options.port){
-        config.edgemicro.port = parseInt(options.port);
+        config.system.port = parseInt(options.port);
       }
 
       if (err) {
@@ -40,7 +40,7 @@ Gateway.prototype.start = function start(options, cb) {
           console.log('using cached configuration from %s',cache);
           config = edgeconfig.load({source:cache})
           if(options.port){
-            config.edgemicro.port = parseInt(options.port);
+            config.system.port = parseInt(options.port);
           }
         }
       } else {
@@ -64,8 +64,6 @@ Gateway.prototype.start = function start(options, cb) {
         for (var i = 0; i < numWorkers; i++) {
           cluster.fork();
         }
-
-        gateway(config);
 
         cluster.on('death', function (worker) {
           console.log('worker ' + worker.pid + ' died');
