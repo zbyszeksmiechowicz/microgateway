@@ -53,6 +53,7 @@ CertLogic.prototype.retrievePublicKeyPrivate = function( callback) {
 CertLogic.prototype.checkCertWithPassword = function(options, callback) {
 
   const uri = util.format('%s/v1/organizations/%s/environments/%s/vaults/%s/entries',
+
     this.managementUri, options.org, options.env, this.vaultName);
   request({
     uri: uri,
