@@ -98,6 +98,9 @@ const setup = function setup() {
       if (!options.secret ) {return  options.error('secret is required');}
       if (!options.org ) { return  options.error('org is required'); }
       if (!options.env ) { return  options.error('env is required'); }
+
+      // TODO once apid API is changed to no longer need env, this can go away
+      process.env.ENV = options.env;
       run.start(options);
     });
 
