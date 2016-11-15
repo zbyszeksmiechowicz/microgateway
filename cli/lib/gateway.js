@@ -58,6 +58,8 @@ Gateway.prototype.start =  (options) => {
         config.system.port = parseInt(options.port);
       }
       edgeconfig.save(config, cache);
+      process.env.CONFIG = JSON.stringify(config);
+
     }
 
     var opt = {};
@@ -132,6 +134,7 @@ Gateway.prototype.start =  (options) => {
           if (isConfigChanged) {
             console.log('Configuration change detected. Saving new config and Initiating reload');
             edgeconfig.save(newConfig, cache);
+            process.env.CONFIG = JSON.stringify(newConfig);
             clientSocket.sendMessage({command: 'reload'});
           }
           setTimeout(()=> {
