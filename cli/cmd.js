@@ -75,6 +75,7 @@ const setup = function setup() {
     .option('-p, --processes <processes>', 'number of processes to start, defaults to # of cores')
     .option('-d, --pluginDir <pluginDir>','absolute path to plugin directory')
     .option('-r, --port <portNumber>','override port in the config.yaml file')
+    .option('-h, --heapDumpInterval <seconds>', 'create a periodic heapdump report')
     .description('start the gateway based on configuration')
     .action((options)=>{
       options.error = optionError;
@@ -98,6 +99,12 @@ const setup = function setup() {
       if (!options.secret ) {return  options.error('secret is required');}
       if (!options.org ) { return  options.error('org is required'); }
       if (!options.env ) { return  options.error('env is required'); }
+      if (options.heapDumpInterval) {
+        var heapdump = require('heapdump');
+        setInterval(
+          () => heapdump.writeSnapshot('/tmp/' + Date.now() + '.heapsnapshot'),
+          1000*options.heapDumpInterval)
+      }
       run.start(options);
     });
 
