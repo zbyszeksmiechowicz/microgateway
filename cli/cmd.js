@@ -32,6 +32,10 @@ const setup = function setup() {
     .option('-r, --port <portNumber>','override port in the config.yaml file')
     .action((options) => {
       options.error = optionError;
+      options.org = options.org || process.env.EDGEMICRO_ORG;
+      options.env = options.env || process.env.EDGEMICRO_ENV;
+      options.username = options.username || process.env.EDGEMICRO_USERNAME;
+      options.password = options.password || process.env.EDGEMICRO_PASSWORD;
       if (!options.username) { return options.error('username is required'); }
       if (!options.org) { return options.error('org is required'); }
       if (!options.env) { return options.error('env is required'); }
