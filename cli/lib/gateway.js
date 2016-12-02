@@ -36,7 +36,7 @@ Gateway.prototype.start =  (options) => {
   const cache = configLocations.getCachePath(options.org, options.env);
 
   const keys = {key: options.key, secret: options.secret};
-  const args = {target: cache, keys: keys, pluginDir: options.pluginDir, heapDumpInterval: options.heapDumpInterval};
+  const args = {target: cache, keys: keys, pluginDir: options.pluginDir, heapDump: options.heapDump};
 
   edgeconfig.get({source: source, keys: keys},  (err, config) => {
     if (err) {

@@ -75,7 +75,7 @@ const setup = function setup() {
     .option('-p, --processes <processes>', 'number of processes to start, defaults to # of cores')
     .option('-d, --pluginDir <pluginDir>','absolute path to plugin directory')
     .option('-r, --port <portNumber>','override port in the config.yaml file')
-    .option('-h, --heapDumpInterval <seconds>', 'create a periodic heapdump report')
+    .option('--heapDump <seconds>', 'create heapdumps and heap diffs')
     .description('start the gateway based on configuration')
     .action((options)=>{
       options.error = optionError;
