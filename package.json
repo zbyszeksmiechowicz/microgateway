@@ -25,7 +25,7 @@
     "log-symbols": "^1.0.2",
     "memwatch-next": "^0.3.0",
     "microgateway-config": "https://github.com/apigee/microgateway-config",
-    "microgateway-core": "git://github.com/apigee/microgateway-core.git#stress-testing",
+    "microgateway-core": "git://github.com/apigee/microgateway-core.git#perf-fix",
     "microgateway-edgeauth": "^1.0.2",
     "microgateway-plugins": "https://github.com/apigee/microgateway-plugins",
     "pem": "^1.8.1",
