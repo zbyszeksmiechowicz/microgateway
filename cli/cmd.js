@@ -30,7 +30,7 @@ const setup = function setup() {
     .option('-c, --processes <processes>', 'number of processes to start, defaults to # of cores')
     .option('-l, --pluginDir <pluginDir>','absolute path to plugin directory')
     .option('-r, --port <portNumber>','override port in the config.yaml file')
-    .option('-m --metrics', 'enable appmetrics-statsd to emit metrics')
+    .option('-m --enableMetrics', 'enable appmetrics-statsd to emit metrics')
     .action((options) => {
       options.error = optionError;
       options.org = options.org || process.env.EDGEMICRO_ORG;
@@ -62,7 +62,8 @@ const setup = function setup() {
             options.secret = process.env.EDGEMICRO_SECRET;
             options.processes =  options.processes || process.env.EDGEMICRO_PROCESSES;
             options.pluginDir = options.pluginDir || process.env.EDGEMICRO_PLUGIN_DIR;
-            if (options.metrics) {
+            
+            if (options.metrics || process.env.ENABLE_METRICS) {
               require('appmetrics-statsd').StatsD({
                 prefix: 'edgemicro'
               });
