@@ -8,6 +8,7 @@ const keyGenerator = require('./lib/key-gen')();
 const prompt = require('cli-prompt');
 const init = require('./lib/init');
 var portastic = require('portastic');
+var preventCleanup;
 
 const setup = function setup() {
   commander
@@ -62,9 +63,10 @@ const setup = function setup() {
             options.secret = process.env.EDGEMICRO_SECRET;
             options.processes =  options.processes || process.env.EDGEMICRO_PROCESSES;
             options.pluginDir = options.pluginDir || process.env.EDGEMICRO_PLUGIN_DIR;
-            
+
             if (options.metrics || process.env.ENABLE_METRICS) {
-              require('appmetrics-statsd').StatsD({
+              console.log('\n\n Found the metrics flag \n\n');
+              preventCleanup = require('appmetrics-statsd').StatsD({
                 prefix: 'edgemicro'
               });
             }
