@@ -64,17 +64,14 @@ const setup = function setup() {
             options.processes =  options.processes || process.env.EDGEMICRO_PROCESSES;
             options.pluginDir = options.pluginDir || process.env.EDGEMICRO_PLUGIN_DIR;
 
-            if (options.metrics || process.env.ENABLE_METRICS) {
-              console.log('\n\n Found the metrics flag \n\n');
-              preventCleanup = require('appmetrics-statsd').StatsD({
-                prefix: 'edgemicro'
-              });
+            if (options.enableMetrics || process.env.ENABLE_METRICS) {
+              console.log('Sending app metrics to statsd');
+              preventCleanup = require('appmetrics-statsd').StatsD('localhost', 8125, 'edgemicro');
             }
             run.start(options);
           });
       });
   });
-
 
   commander
     .command('configure')
@@ -123,7 +120,6 @@ const setup = function setup() {
       if (!options.secret) { return  options.error('secret is required'); }
       verify.verify(options);
     });
-
 
   commander
     .command('start')

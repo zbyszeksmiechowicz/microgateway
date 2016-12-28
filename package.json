@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "apigeetool": "^0.6.3",
-    "appmetrics-statsd": "^1.0.1",
+    "appmetrics-statsd": "https://github.com/F1ERRO/appmetrics-statsd",
     "async": "^1.5.2",
     "body-parser": "^1.12.4",
     "cli-prompt": "^0.5.0",
