@@ -66,7 +66,7 @@ const setup = function setup() {
 
             if (options.enableMetrics || process.env.ENABLE_METRICS) {
               console.log('Sending app metrics to statsd');
-              preventCleanup = require('appmetrics-statsd').StatsD('localhost', 8125, 'edgemicro');
+              preventCleanup = require('appmetrics-statsd').StatsD();
             }
             run.start(options);
           });
