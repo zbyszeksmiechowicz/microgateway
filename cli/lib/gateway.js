@@ -39,7 +39,7 @@ Gateway.prototype.start =  (options) => {
   const keys = {key: options.key, secret: options.secret};
   const args = {target: cache, keys: keys, pluginDir: options.pluginDir};
 
-  edgeconfig.get({systemConfigPath: options.systemConfigPath, apid: options.apid},  (err, config) => {
+  edgeconfig.get({systemConfigPath: options.systemConfigPath, apidEndpoint: options.apidEndpoint},  (err, config) => {
     if (err) {
       const exists = fs.existsSync(cache);
       console.error("failed to retieve config from gateway. continuing, will try cached copy..");
