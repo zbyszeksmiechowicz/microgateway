@@ -50,6 +50,9 @@ Configure.prototype.configure = function configure(options, cb) {
       options.url = 'https://' + options.url;
     }
     defaultConfig.edge_config.authUri = options.url + '/edgemicro-auth';
+  } else {
+    var newAuthURI = util.format(defaultConfig.edge_config.authUri, options.org, options.env);
+    defaultConfig.edge_config.authUri = newAuthURI;
   }
 
   authUri = defaultConfig.edge_config.authUri;
@@ -68,11 +71,12 @@ Configure.prototype.configure = function configure(options, cb) {
     fs.unlinkSync(targetPath);
     //console.log('deleted ' + targetPath);
   }
-
+  
+  var configFileDirectory = options.configDir || configLocations.homeDir; 
   //console.log('init config');
   edgeconfig.init({
     source: configLocations.getDefaultPath(),
-    targetDir: configLocations.homeDir,
+    targetDir: configFileDirectory,
     targetFile: targetFile,
     overwrite: true
   }, function (err, configPath) {
@@ -144,7 +148,7 @@ function configureEdgemicroWithCreds(options, cb) {
     if (err) {
       return cb(err)
     }
-    agentConfigPath = configLocations.getSourcePath(options.org, options.env);
+    agentConfigPath = configLocations.getSourcePath(options.org, options.env, options.configDir);
     const agentConfig = edgeconfig.load({ source: agentConfigPath });
 
     addEnvVars(agentConfig);
@@ -153,8 +157,7 @@ function configureEdgemicroWithCreds(options, cb) {
       agentConfig['edge_config']['jwt_public_key'] = results[0]; // get deploy results
       agentConfig['edge_config'].bootstrap = results[2].bootstrap; // get genkeys results
     } else {
-      agentConfig['edge_config']['jwt_public_key'] =
-        options.url ? authUri + '/publicKey' : util.format(authUri + '/publicKey', options.org, options.env);
+      agentConfig['edge_config']['jwt_public_key'] = authUri + '/publicKey';
       agentConfig['edge_config'].bootstrap = results[1].bootstrap;
     }
 

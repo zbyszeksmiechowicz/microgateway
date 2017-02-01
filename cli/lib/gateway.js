@@ -11,6 +11,7 @@ const configLocations = require('../../config/locations');
 const isWin = /^win/.test(process.platform);
 const ipcPath = configLocations.getIPCFilePath();
 const defaultPollInterval = 10;
+const uuid = require('uuid');
 
 const Gateway = function () {
 };
@@ -32,13 +33,13 @@ Gateway.prototype.start =  (options) => {
     // so ignore and proceed
   }
 
-  const source = configLocations.getSourcePath(options.org, options.env);
-  const cache = configLocations.getCachePath(options.org, options.env);
+  const source = configLocations.getSourcePath(options.org, options.env, options.configDir);
+  const cache = configLocations.getCachePath(options.org, options.env, options.configDir);
 
   const keys = {key: options.key, secret: options.secret};
   const args = {target: cache, keys: keys, pluginDir: options.pluginDir};
 
-  edgeconfig.get({source: source, keys: keys},  (err, config) => {
+  edgeconfig.get({systemConfigPath: options.systemConfigPath, apid: options.apid},  (err, config) => {
     if (err) {
       const exists = fs.existsSync(cache);
       console.error("failed to retieve config from gateway. continuing, will try cached copy..");
@@ -62,9 +63,19 @@ Gateway.prototype.start =  (options) => {
 
     }
 
+    config.uid = uuid.v1();
+    var logger = gateway.Logging.init(config);  
     var opt = {};
+    delete args.keys;
     opt.args = [JSON.stringify(args)];
     opt.timeout = 10;
+    opt.logger = gateway.Logging.getLogger();
+    
+    //Let reload cluster know how many processes to use if the user doesn't want the default
+    if(options.processes) {
+      opt.workers = Number(options.processes);
+    }
+
     var mgCluster = reloadCluster(path.join(__dirname, 'start-agent.js'), opt);
 
     var server = net.createServer();
@@ -179,7 +190,7 @@ Gateway.prototype.reload = (options) => {
       socket.sendMessage({command: 'reload'});
       socket.on('message', (success) => {
         if (success) {
-          console.log('Reload Completed Succesfully');
+          console.log('Reload Completed Successfully');
         } else {
           console.error('Reloading edgemicro was unsuccessful');
         }
