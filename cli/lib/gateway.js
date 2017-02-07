@@ -58,7 +58,7 @@ Gateway.prototype.start =  (options) => {
       if (options.port) {
         config.system.port = parseInt(options.port);
       }
-      edgeconfig.save(config, cache);
+      //edgeconfig.save(config, cache);
       process.env.CONFIG = JSON.stringify(config);
 
     }
