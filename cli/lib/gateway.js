@@ -53,10 +53,15 @@ Gateway.prototype.start =  (options) => {
         if (options.port) {
           config.system.port = parseInt(options.port);
         }
+
       }
     } else {
       if (options.port) {
         config.system.port = parseInt(options.port);
+      }
+      
+      if(options.apidEndpoint && config['analytics-apid']) {
+        config['analytics-apid'].apidEndpoint = options.apidEndpoint;
       }
       //edgeconfig.save(config, cache);
       process.env.CONFIG = JSON.stringify(config);
