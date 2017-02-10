@@ -54,7 +54,6 @@ Gateway.prototype.start =  (options) => {
     config.uid = uuid.v1();
     var logger = gateway.Logging.init(config);  
     var opt = {};
-    delete args.keys;
     opt.args = [JSON.stringify(args)];
     opt.timeout = 10;
     opt.logger = gateway.Logging.getLogger();
