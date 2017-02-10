@@ -10,7 +10,7 @@ const JsonSocket = require('./json-socket');
 const configLocations = require('../../config/locations');
 const isWin = /^win/.test(process.platform);
 const ipcPath = configLocations.getIPCFilePath();
-const defaultPollInterval = 10;
+const defaultPollInterval = 100;
 const uuid = require('uuid');
 
 const Gateway = function () {
@@ -33,28 +33,11 @@ Gateway.prototype.start =  (options) => {
     // so ignore and proceed
   }
 
-  const source = configLocations.getSourcePath(options.org, options.env, options.configDir);
-  const cache = configLocations.getCachePath(options.org, options.env, options.configDir);
-
-  const keys = {key: options.key, secret: options.secret};
-  const args = {target: cache, keys: keys, pluginDir: options.pluginDir};
+  const args = {pluginDir: options.pluginDir};
 
   edgeconfig.get({systemConfigPath: options.systemConfigPath, apidEndpoint: options.apidEndpoint},  (err, config) => {
     if (err) {
-      const exists = fs.existsSync(cache);
-      console.error("failed to retieve config from gateway. continuing, will try cached copy..");
-      console.error(err);
-      if (!exists) {
-        console.error('cache configuration ' + cache + ' does not exist. exiting.');
-        return;
-      } else {
-        console.log('using cached configuration from %s', cache);
-        config = edgeconfig.load({source: cache});
-        if (options.port) {
-          config.system.port = parseInt(options.port);
-        }
-
-      }
+      return console.log('Error downloading configuration. Gateway not started.');
     } else {
       if (options.port) {
         config.system.port = parseInt(options.port);
@@ -110,7 +93,6 @@ Gateway.prototype.start =  (options) => {
     });
 
     mgCluster.run();
-    console.log('PROCESS PID : '+ process.pid);
 
     process.on('exit', () => {
       if (!isWin) {
@@ -132,132 +114,104 @@ Gateway.prototype.start =  (options) => {
     // send reload message to socket.
     var clientSocket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
     clientSocket.connect(ipcPath);
-    edgeconfig.setRefreshing(clientSocket);
+    edgeconfig.setRefreshing(clientSocket, pollInterval);
     //start the polling mechanism to look for config changes
-    /*var reloadOnConfigChange = (oldConfig, cache, opts) => {
-      console.log('Checking for change in configuration');
-      var self = this;
-      edgeconfig.get(opts, (err, newConfig) => {
-        if (err) {
-          // failed to check new config. so try to check again after pollInterval
-          console.error('Failed to check for change in Config. Will retry after ' + pollInterval + ' seconds');
-          setTimeout(()=> {
-            reloadOnConfigChange(oldConfig, cache, opts);
-          }, pollInterval * 1000);
-        } else {
-          pollInterval = config.system.config_change_poll_interval ? config.system.config_change_poll_interval : pollInterval;
-          var isConfigChanged = hasConfigChanged(oldConfig, newConfig);
-          if (isConfigChanged) {
-            console.log('Configuration change detected. Saving new config and Initiating reload');
-            edgeconfig.save(newConfig, cache);
-            process.env.CONFIG = JSON.stringify(newConfig);
-            clientSocket.sendMessage({command: 'reload'});
-          }
-          setTimeout(()=> {
-            reloadOnConfigChange(newConfig, cache, opts);
-          }, pollInterval * 1000);
-        }
-      });
-    };
-    setTimeout(()=> {
-      reloadOnConfigChange(config, cache, {source: source, keys: keys});
-    }, pollInterval * 1000);*/
   });
 };
 
-Gateway.prototype.reload = (options) => {
-  const source = configLocations.getSourcePath(options.org, options.env);
-  const cache = configLocations.getCachePath(options.org, options.env);
-  const keys = {key: options.key, secret: options.secret};
+// Gateway.prototype.reload = (options) => {
+//   const source = configLocations.getSourcePath(options.org, options.env);
+//   const cache = configLocations.getCachePath(options.org, options.env);
+//   const keys = {key: options.key, secret: options.secret};
 
-  var socket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
-  socket.on('connect', () => {
-    edgeconfig.get({source: source, keys: keys}, (err, config) => {
-      if (err) {
-        const exists = fs.existsSync(cache);
-        console.error("failed to retieve config from gateway. continuing, will try cached copy..");
-        console.error(err);
-        //will need to check for system port
-        if (!exists) {
-          console.error('cache configuration ' + cache + ' does not exist. exiting.');
-          return;
-        } else {
-          console.log('using cached configuration from %s', cache);
-          config = edgeconfig.load({source: cache});
-          if(options.port){
-            config.system.port = parseInt(options.port);
-          }
-        }
-      } else {
-        edgeconfig.save(config, cache);
-      }
+//   var socket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
+//   socket.on('connect', () => {
+//     edgeconfig.get({source: source, keys: keys}, (err, config) => {
+//       if (err) {
+//         const exists = fs.existsSync(cache);
+//         console.error("failed to retieve config from gateway. continuing, will try cached copy..");
+//         console.error(err);
+//         //will need to check for system port
+//         if (!exists) {
+//           console.error('cache configuration ' + cache + ' does not exist. exiting.');
+//           return;
+//         } else {
+//           console.log('using cached configuration from %s', cache);
+//           config = edgeconfig.load({source: cache});
+//           if(options.port){
+//             config.system.port = parseInt(options.port);
+//           }
+//         }
+//       } else {
+//         edgeconfig.save(config, cache);
+//       }
 
-      socket.sendMessage({command: 'reload'});
-      socket.on('message', (success) => {
-        if (success) {
-          console.log('Reload Completed Successfully');
-        } else {
-          console.error('Reloading edgemicro was unsuccessful');
-        }
-        process.exit(0);
-      });
-    });
-  });
-  socket.on('error', (error)=> {
-    if (error) {
-      if (error.code == 'ENOENT') {
-        console.error('edgemicro is not running.');
-      }
-    }
-  });
-  socket.connect(ipcPath);
-};
+//       socket.sendMessage({command: 'reload'});
+//       socket.on('message', (success) => {
+//         if (success) {
+//           console.log('Reload Completed Successfully');
+//         } else {
+//           console.error('Reloading edgemicro was unsuccessful');
+//         }
+//         process.exit(0);
+//       });
+//     });
+//   });
+//   socket.on('error', (error)=> {
+//     if (error) {
+//       if (error.code == 'ENOENT') {
+//         console.error('edgemicro is not running.');
+//       }
+//     }
+//   });
+//   socket.connect(ipcPath);
+// };
 
-Gateway.prototype.stop = (options) => {
-  var socket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
-  socket.on('connect', () => {
-    socket.sendMessage({command: 'stop'});
-    socket.on('message', (success) => {
-      if (success) {
-        console.log('Stop Completed Succesfully');
-      } else {
-        console.error('Stopping edgemicro was unsuccessful');
-      }
-      process.exit(0);
-    });
-  });
-  socket.on('error', (error)=> {
-    if (error) {
-      if (error.code == 'ENOENT') {
-        console.error('edgemicro is not running.');
-      }
-    }
-  });
-  socket.connect(ipcPath);
-};
+// Gateway.prototype.stop = (options) => {
+//   var socket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
+//   socket.on('connect', () => {
+//     socket.sendMessage({command: 'stop'});
+//     socket.on('message', (success) => {
+//       if (success) {
+//         console.log('Stop Completed Succesfully');
+//       } else {
+//         console.error('Stopping edgemicro was unsuccessful');
+//       }
+//       process.exit(0);
+//     });
+//   });
+//   socket.on('error', (error)=> {
+//     if (error) {
+//       if (error.code == 'ENOENT') {
+//         console.error('edgemicro is not running.');
+//       }
+//     }
+//   });
+//   socket.connect(ipcPath);
+// };
 
-Gateway.prototype.status = (options) => {
-  var socket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
-  socket.on('connect', () => {
-    socket.sendMessage({command: 'status'});
-    socket.on('message', (result) => {
-      console.log('edgemicro is running with '+result+' workers');
-      process.exit(0);
-    });
-  });
-  socket.on('error', (error)=> {
-    if (error) {
-      if (error.code == 'ENOENT') {
-        console.error('edgemicro is not running.');
-      }
-    }
-  });
-  socket.connect(ipcPath);
-};
+// Gateway.prototype.status = (options) => {
+//   var socket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
+//   socket.on('connect', () => {
+//     socket.sendMessage({command: 'status'});
+//     socket.on('message', (result) => {
+//       console.log('edgemicro is running with '+result+' workers');
+//       process.exit(0);
+//     });
+//   });
+//   socket.on('error', (error)=> {
+//     if (error) {
+//       if (error.code == 'ENOENT') {
+//         console.error('edgemicro is not running.');
+//       }
+//     }
+//   });
+//   socket.connect(ipcPath);
+// };
 
-function hasConfigChanged(oldConfig, newConfig) {
-  // This may not be the best way to do the check. But it works for now.
-  var hasChanged = JSON.stringify(oldConfig) != JSON.stringify(newConfig);
-  console.log("Config change detected: ", hasChanged);
-  return hasChanged;
-}
+// function hasConfigChanged(oldConfig, newConfig) {
+//   // This may not be the best way to do the check. But it works for now.
+//   var hasChanged = JSON.stringify(oldConfig) != JSON.stringify(newConfig);
+//   console.log("Config change detected: ", hasChanged);
+//   return hasChanged;
+// }
