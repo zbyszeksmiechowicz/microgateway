@@ -1,4 +1,4 @@
-'use strict'
+/*'use strict'
 const assert = require('assert');
 const password = process.env.MOCHA_PASSWORD;
 const key = process.env.MOCHA_KEY;
@@ -27,4 +27,4 @@ module.exports = {
   env:env,
   tokenSecret:tokenSecret,
   tokenId:tokenId
-};
+};*/

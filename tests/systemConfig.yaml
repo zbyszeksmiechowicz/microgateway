@@ -1,0 +1,26 @@
+system:
+  logging:
+    level: error
+    dir: /var/tmp
+    stats_log_interval: 60
+    rotate_interval: 24
+  port: 8000
+  max_connections: 1000
+  max_connections_hard: 5000
+  restart_sleep: 500
+  restart_max: 50
+  max_times: 300
+  vhosts:
+    myvhost:
+      vhost: localhost:3303
+      cert: /path/to/cert
+headers:
+  x-forwarded-for: true
+  x-forwarded-host: true
+  x-request-id: true
+  x-response-time: true
+  via: true
+spikearrest:
+  timeUnit: minute
+  allow: 10
+  buffersize: 0

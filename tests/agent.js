@@ -15,39 +15,49 @@ const configLocations = require('../config/locations');
 const thisPath = path.normalize(__dirname);
 configLocations.homeDir = thisPath;
 configLocations.defaultDir = thisPath;
-const password = envVars.password;
-const key = envVars.key;
-const secret = envVars.secret;
-const user = envVars.user;
-const org = envVars.org;
-const env = envVars.env;
+// const password = envVars.password;
+// const key = envVars.key;
+// const secret = envVars.secret;
+// const user = envVars.user;
+// const org = envVars.org;
+// const env = envVars.env;
 describe('configured agent/server address', function() {
   const port = 3303;
-  var target ;
+  const apidPort = 3304;
+  var target;
+  var apidServer;
   restServer.listen(port)
 
-  const keys = { key: key, secret: secret };
+
+  
   var config;
   before(function(done) {
     this.timeout(400000);
-    configure.configure({ username: user, password: password, org: org, env: env, error:(msg)=>{done(msg)}}, () => {
-      edgeConfig.get({ keys: keys, source: configLocations.getSourcePath(org, env) }, (err, configDownload) => {
-        config = configDownload;
-        delete config.edgemicro.plugins
-        config.proxies[0].url = "http://localhost:" + port + "/";
-        target = "http://localhost:" + config.edgemicro.port + "/edgemicro_hello/";
-        agent.start(keys, null, config, done);
-        config = configDownload;
-      });
+    var http = require('http');
+    function handleRequest(request, response){        
+      response.end(JSON.stringify(require('./sample_deployments_response.js')));
+    }
+    apidServer = http.createServer(handleRequest);
+    apidServer.listen(apidPort, function(){
+      console.log("Test apid server listening on: http://localhost:%s", apidPort);
+    });
 
+    edgeConfig.get({systemConfigPath: './systemConfig.yaml',  apidEndpoint: 'http://localhost:'+apidPort }, (err, configDownload) => {
+      config = configDownload;
+      config.proxies[0].url = "http://localhost:" + port + "/";
+      target = "http://localhost:" + config.system.port + "/iloveapis/";
+      agent.start(null, config, done);
     });
   });
+
   after(function(done) {
     // close agent server before finishing
     restServer.close(()=>{
       agent.close(done);
-    });;
+    });
+    apidServer.close();
   });
+
   beforeEach(function(done) {
     done();
   });
@@ -72,7 +82,7 @@ describe('configured agent/server address', function() {
     }, function(err, res, body) {
       assert(err, 'must have err');
       assert.equal(err.code, "ECONNREFUSED");
-      agent.start({ key: key, secret: secret },null, config, done);
+      agent.start(null, config, done);
     });
   });
 
@@ -85,7 +95,7 @@ describe('configured agent/server address', function() {
     }, function(err, res, body) {
       assert(err, 'must have err');
       assert.equal(err.code, "ECONNREFUSED");
-      agent.start({ key: key, secret: secret },null, config, () => {
+      agent.start(null, config, () => {
         request({
           method: 'GET',
           uri: target
