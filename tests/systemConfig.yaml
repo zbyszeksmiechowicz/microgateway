@@ -1,6 +1,7 @@
 system:
   logging:
-    level: error
+    to_console: true
+    level: info
     dir: /var/tmp
     stats_log_interval: 60
     rotate_interval: 24
@@ -12,7 +13,7 @@ system:
   max_times: 300
   vhosts:
     myvhost:
-      vhost: localhost:3303
+      vhost: localhost:8000
       cert: /path/to/cert
 headers:
   x-forwarded-for: true
