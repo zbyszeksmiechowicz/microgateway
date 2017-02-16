@@ -42,7 +42,7 @@ describe('configured agent/server address', function() {
       console.log("Test apid server listening on: http://localhost:%s", apidPort);
     });
 
-    edgeConfig.get({systemConfigPath: './systemConfig.yaml',  apidEndpoint: 'http://localhost:'+apidPort }, (err, configDownload) => {
+    edgeConfig.get({systemConfigPath: './tests/systemConfig.yaml',  apidEndpoint: 'http://localhost:'+apidPort }, (err, configDownload) => {
       config = configDownload;
       config.proxies[0].url = "http://localhost:" + port + "/";
       target = "http://localhost:" + config.system.port + "/iloveapis/";
