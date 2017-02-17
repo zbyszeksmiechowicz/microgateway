@@ -15,12 +15,7 @@ const configLocations = require('../config/locations');
 const thisPath = path.normalize(__dirname);
 configLocations.homeDir = thisPath;
 configLocations.defaultDir = thisPath;
-// const password = envVars.password;
-// const key = envVars.key;
-// const secret = envVars.secret;
-// const user = envVars.user;
-// const org = envVars.org;
-// const env = envVars.env;
+
 describe('configured agent/server address', function() {
   const port = 3303;
   const apidPort = 3304;
