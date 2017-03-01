@@ -37,6 +37,9 @@ Gateway.prototype.start =  (options) => {
 
   edgeconfig.get({systemConfigPath: options.systemConfigPath, apidEndpoint: options.apidEndpoint},  (err, config) => {
     if (err) {
+      if(err.name == 'YAMLException') {
+        console.log(err.name + ' ' + err.reason);
+      }
       return console.log('Error downloading configuration. Gateway not started.');
     } else {
       if (options.port) {
