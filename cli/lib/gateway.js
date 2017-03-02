@@ -35,7 +35,11 @@ Gateway.prototype.start =  (options) => {
 
   const args = {pluginDir: options.pluginDir};
 
-  edgeconfig.get({systemConfigPath: options.systemConfigPath, apidEndpoint: options.apidEndpoint},  (err, config) => {
+  edgeconfig.get({
+    systemConfigPath: options.systemConfigPath, 
+    apidEndpoint: options.apidEndpoint,
+    configFile: options.configFile
+  },  (err, config) => {
     if (err) {
       if(err.name == 'YAMLException') {
         err.message = err.name + ' ' + err.reason;
@@ -49,9 +53,8 @@ Gateway.prototype.start =  (options) => {
       if(options.apidEndpoint && config['analytics-apid']) {
         config['analytics-apid'].apidEndpoint = options.apidEndpoint;
       }
-      //edgeconfig.save(config, cache);
       process.env.CONFIG = JSON.stringify(config);
-
+      
     }
 
     config.uid = uuid.v1();
@@ -116,7 +119,13 @@ Gateway.prototype.start =  (options) => {
     // send reload message to socket.
     var clientSocket = new JsonSocket(new net.Socket()); //Decorate a standard net.Socket with JsonSocket
     clientSocket.connect(ipcPath);
-    edgeconfig.setRefreshing(clientSocket, pollInterval);
+    
+    //Not starting with a raw config? 
+    //Let's setup refreshing
+    if(!options.configFile) {
+      edgeconfig.setRefreshing(clientSocket, pollInterval);
+    }
+    
     //start the polling mechanism to look for config changes
   });
 };

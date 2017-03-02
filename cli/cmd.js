@@ -2,6 +2,8 @@
 
 const commander = require('commander');
 const run = require('./lib/gateway')();
+const config = require('./lib/config');
+const fs = require('fs');
 
 
 const setup = function setup() {
@@ -17,15 +19,33 @@ const setup = function setup() {
     .option('-r, --port <portNumber>','override port in the config.yaml file')
     .option('-s, --systemConfigPath <systemConfigPath>', 'Path where the system config is located')
     .option('-a, --apidEndpoint <apidEndpoint>', 'Base url for your apid instance')
-
+    .option('-c, --configFile <configFile>', 'Full config file to start edgemicro')
     .description('start the gateway based on configuration')
     .action((options)=>{
       options.error = optionError;
       options.processes =  options.processes || process.env.EDGEMICRO_PROCESSES;
       options.systemConfigPath = options.systemConfigPath || process.env.EDGEMICRO_SYSTEM_CONFIG_PATH;
       options.apidEndpoint = options.apidEndpoint || process.env.EDGEMICRO_APID_ENDPOINT;
-
+      options.configFile = options.configFile || process.env.EDGEMICRO_CONFIG_FILE;
       run.start(options);
+    });
+
+  commander
+    .command('config')
+    .option('-s, --systemConfigPath <systemConfigPath>', 'Path where the system config is located')
+    .option('-a, --apidEndpoint <apidEndpoint>', 'Base url for your apid instance')
+    .description('print generated configuration from apid')
+    .action((options)=>{
+      options.systemConfigPath = options.systemConfigPath || process.env.EDGEMICRO_SYSTEM_CONFIG_PATH;
+      options.apidEndpoint = options.apidEndpoint || process.env.EDGEMICRO_APID_ENDPOINT;
+      options.printRawConfig = true;
+
+      config(options, (err, config) => {
+        if(!err) {
+          console.log('Your configuration generated from apid:');
+          console.log(config.toString()+fs.readFileSync(options.systemConfigPath).toString());
+        }
+      });
     });
 
   commander.parse(process.argv);
