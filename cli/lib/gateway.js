@@ -42,7 +42,7 @@ Gateway.prototype.start =  (options) => {
   },  (err, config) => {
     if (err) {
       if(err.name == 'YAMLException') {
-        err.message = err.name + ' ' + err.reason;
+        err.message = err.name + ' ' + err.reason + '\n Please run the config command with the same arguments to see a unified config file to see the issue.';
       }
       return console.log('Error downloading configuration. Gateway not started. Reason: ', err.message);
     } else {
@@ -54,7 +54,7 @@ Gateway.prototype.start =  (options) => {
         config['analytics-apid'].apidEndpoint = options.apidEndpoint;
       }
       process.env.CONFIG = JSON.stringify(config);
-      
+
     }
 
     config.uid = uuid.v1();
