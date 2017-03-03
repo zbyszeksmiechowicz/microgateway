@@ -38,7 +38,8 @@ Gateway.prototype.start =  (options) => {
   edgeconfig.get({
     systemConfigPath: options.systemConfigPath, 
     apidEndpoint: options.apidEndpoint,
-    configFile: options.configFile
+    configFile: options.configFile,
+    port: options.port
   },  (err, config) => {
     if (err) {
       if(err.name == 'YAMLException') {
@@ -46,9 +47,6 @@ Gateway.prototype.start =  (options) => {
       }
       return console.log('Error downloading configuration. Gateway not started. Reason: ', err.message);
     } else {
-      if (options.port) {
-        config.system.port = parseInt(options.port);
-      }
       
       //inject the apidEndpoint to analytics plugin config
       if(options.apidEndpoint && config['analytics-apid']) {
