@@ -48,16 +48,6 @@ Gateway.prototype.start =  (options) => {
       return console.log('Error downloading configuration. Gateway not started. Reason: ', err.message);
     } else {
       
-      //inject the apidEndpoint to analytics plugin config
-      if(options.apidEndpoint && config['analytics-apid']) {
-        config['analytics-apid'].apidEndpoint = options.apidEndpoint;
-      }
-
-      //inject the apidEndpoint to verify api key
-      if(options.apidEndpoint && config['verify-api-key']) {
-        config['verify-api-key'].apidEndpoint = options.apidEndpoint;
-      }
-
       process.env.CONFIG = JSON.stringify(config);
 
     }
