@@ -1,6 +1,6 @@
 {
   "name": "edgemicro",
-  "version": "3.0.1-early-access",
+  "version": "3.0.2-early-access",
   "dependencies": {
     "acorn": {
       "version": "4.0.11",
@@ -234,9 +234,9 @@
       "resolved": "https://registry.npmjs.org/bunyan/-/bunyan-1.8.8.tgz",
       "dependencies": {
         "dtrace-provider": {
-          "version": "0.8.0",
+          "version": "0.8.1",
           "from": "dtrace-provider@>=0.8.0 <0.9.0",
-          "resolved": "https://registry.npmjs.org/dtrace-provider/-/dtrace-provider-0.8.0.tgz"
+          "resolved": "https://registry.npmjs.org/dtrace-provider/-/dtrace-provider-0.8.1.tgz"
         }
       }
     },
@@ -1380,9 +1380,9 @@
       }
     },
     "microgateway-config": {
-      "version": "3.0.1-early-access",
+      "version": "3.0.2-early-access",
       "from": "microgateway-config@early-access",
-      "resolved": "https://registry.npmjs.org/microgateway-config/-/microgateway-config-3.0.1-early-access.tgz",
+      "resolved": "https://registry.npmjs.org/microgateway-config/-/microgateway-config-3.0.2-early-access.tgz",
       "dependencies": {
         "fs-extra": {
           "version": "0.26.7",
@@ -2697,9 +2697,9 @@
       }
     },
     "microgateway-plugins": {
-      "version": "3.0.0-early-access",
+      "version": "3.0.1-early-access",
       "from": "microgateway-plugins@early-access",
-      "resolved": "https://registry.npmjs.org/microgateway-plugins/-/microgateway-plugins-3.0.0-early-access.tgz"
+      "resolved": "https://registry.npmjs.org/microgateway-plugins/-/microgateway-plugins-3.0.1-early-access.tgz"
     },
     "micromatch": {
       "version": "2.3.11",
@@ -3349,9 +3349,9 @@
       "resolved": "https://registry.npmjs.org/typescript/-/typescript-1.8.10.tgz"
     },
     "uglify-js": {
-      "version": "2.8.7",
+      "version": "2.8.8",
       "from": "uglify-js@>=2.6.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.7.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.8.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.5.6",
