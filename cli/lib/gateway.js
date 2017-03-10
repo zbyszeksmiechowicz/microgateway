@@ -41,16 +41,16 @@ Gateway.prototype.start =  (options) => {
     configFile: options.configFile,
     port: options.port
   },  (err, config) => {
+    //Log out the error, but proceed to start up with an empty config and start polling.
     if (err) {
       if(err.name == 'YAMLException') {
         err.message = err.name + ' ' + err.reason + '\n Please run the config command with the same arguments to see a unified config file to see the issue.';
       }
-      return console.log('Error downloading configuration. Gateway not started. Reason: ', err.message);
-    } else {
-      
-      process.env.CONFIG = JSON.stringify(config);
-
-    }
+      console.log('Error downloading configuration. Gateway not started. Reason: ', err.message);
+    } 
+    
+    process.env.CONFIG = JSON.stringify(config);
+    
 
     config.uid = uuid.v1();
     var logger = gateway.Logging.init(config);  
