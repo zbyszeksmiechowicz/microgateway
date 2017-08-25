@@ -1,6 +1,6 @@
 {
   "name": "edgemicro",
-  "version": "2.4.6",
+  "version": "2.6.0-alpha",
   "dependencies": {
     "ajv": {
       "version": "4.11.8",

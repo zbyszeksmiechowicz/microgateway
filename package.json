@@ -1,6 +1,6 @@
 {
   "name": "edgemicro",
-  "version": "2.4.6",
+  "version": "2.6.0-alpha",
   "description": "Apigee Edge Microgateway",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -52,7 +52,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "stop" : "node stop.js",
+    "stop": "node stop.js",
     "package": "node cli/package.js",
     "test": "mocha --timeout 17000 tests"
   },
@@ -86,9 +86,12 @@
     "Mitch Fierro <fierro.mitch@gmail.com> (https://github.com/f1erro)"
   ],
   "author": "Kevin Swiber <kswiber@gmail.com>",
-  "engines" : { 
-     "node" : ">= 4.8.2",
-     "npm": ">=3.10.8"
+  "engines": {
+    "node": ">= 4.8.2",
+    "npm": ">=3.10.8"
   },
-  "cpu" : [ "!arm", "!mips" ]
+  "cpu": [
+    "!arm",
+    "!mips"
+  ]
 }
