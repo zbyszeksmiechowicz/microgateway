@@ -7,8 +7,8 @@ blue=`tput setaf 4`
 reset=`tput sgr0`
 
 edgemicroctlDist='https://raw.githubusercontent.com/srinandan/edgemicroctl/master/dist'
-ORG=edgemicro-kubernetes
-REPO=edgemicro-k8
+ORG=apigee-internal
+REPO=microgateway
 REQUEST_FILE="$(mktemp /tmp/github.request.XXXX)"
 RESPONSE_FILE="$(mktemp /tmp/github.response.XXXX)"
 
@@ -111,7 +111,7 @@ if [[ "$BUILD_DOCKER" == "y" ]]; then
 fi
 
 
-curl -s -S -X POST -o $RESPONSE_FILE -u  $GIT_USER:$GIT_KEY "https://api.github.com/repos/${ORG}/${REPO}/releases" \
+curl -s -S -X POST -o $RESPONSE_FILE -u  $GIT_USER:$GIT_KEY "https://api.github.com/https/${ORG}/${REPO}/releases" \
 -H 'Content-Type:application/json' \
 -d "{
   \"tag_name\": \"${RELEASE_VERSION}\",
@@ -141,33 +141,33 @@ release_os=("darwinamd64" "darwin386" "linux386" "linuxamd64")
 
 for os in "${release_os[@]}"; 
 	do echo ${os};
-	mkdir -p tmp/edgemicro-k8-${RELEASE_VERSION}-${os}
-	mkdir -p tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/bin
-	cp -fr ../install tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/install
-	cp -fr ../samples tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/samples
-	cp version.txt tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/
-	echo $RELEASE_VERSION > tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/version.txt
+	mkdir -p tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}
+	mkdir -p tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin
+	cp -fr ../install tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install
+	cp -fr ../samples tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples
+	cp version.txt tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/
+	echo $RELEASE_VERSION > tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/version.txt
 
 	# Replace version information
-	sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
-	sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml
+	sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
+	sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml
 
-	rm -fr tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml.bak
-	rm -fr tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml.bak
+	rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml.bak
+	rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml.bak
   
-  curl $edgemicroctlDist/${os}/edgemicroctl -o   tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/bin/edgemicroctl
-	chmod +x tmp/edgemicro-k8-${RELEASE_VERSION}-${os}/bin/edgemicroctl
+  curl $edgemicroctlDist/${os}/edgemicroctl -o   tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin/edgemicroctl
+	chmod +x tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin/edgemicroctl
 
 	cd tmp
 
-	tar -czvf edgemicro-k8-${RELEASE_VERSION}-${os}.tar.gz edgemicro-k8-${RELEASE_VERSION}-${os}
+	tar -czvf edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz edgemicro-k8s-${RELEASE_VERSION}-${os}
 
 	
-	EDGEMICRO_UPLOAD_URL=$UPLOAD_URL?name=edgemicro-k8-${RELEASE_VERSION}-${os}.tar.gz
+	EDGEMICRO_UPLOAD_URL=$UPLOAD_URL?name=edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz
 	curl -X POST $EDGEMICRO_UPLOAD_URL -u  $GIT_USER:$GIT_KEY \
--H "Content-Type:application/octet-stream" --data-binary @edgemicro-k8-${RELEASE_VERSION}-${os}.tar.gz
+-H "Content-Type:application/octet-stream" --data-binary @edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz
 
-	rm -fr edgemicro-k8-${RELEASE_VERSION}-${os}
+	rm -fr edgemicro-k8s-${RELEASE_VERSION}-${os}
 	cd ..
 
 done

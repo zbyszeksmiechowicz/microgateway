@@ -34,7 +34,11 @@ fi
 
 commandString="cd /opt/apigee && export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET &"
 #echo $commandString
-su - apigee -m -c "$commandString" 
+if [[ ${EDGEMICRO_DOCKER} != "" ]]; then
+	su - apigee -c "$commandString"
+else 
+	su - apigee -m -c "$commandString"
+fi 
 #edgemicro start &
 
 # SIGUSR1-handler

@@ -5,8 +5,8 @@ green=`tput setaf 2`
 blue=`tput setaf 4`
 reset=`tput sgr0`
 
-ORG=edgemicro-kubernetes
-REPO=edgemicro-k8
+ORG=apigee
+REPO=microgateway
 
 usage() {
 
