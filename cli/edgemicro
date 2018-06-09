@@ -30,16 +30,16 @@ const latest = 10;
 console.log('current nodejs version is %s', version)
 console.log('current edgemicro version is %s', edgemicroVersion);
 
-for (ver in experimental) {
+for (var ver in experimental) {
     if (version.includes(experimental[ver])) {
         console.log("You are using a version of NodeJS that is not supported");
         return;
     }
 }
 
-majorVersion = parseInt(version.split(".")[0].replace("v", ""));
+var majorVersion = parseInt(version.split(".")[0].replace("v", ""));
 
-if (majorVersion < lts_version || majorVersion > latest) {
+if (majorVersion < ltsVersion || majorVersion > latest) {
     console.log("You are using a version of NodeJS that is not supported");
     return;
 } else {
