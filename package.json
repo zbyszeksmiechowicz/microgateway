@@ -92,7 +92,7 @@
   ],
   "author": "Kevin Swiber <kswiber@gmail.com>",
   "engines": {
-    "node": ">= 4.8.7",
+    "node": ">= 6.14.2",
     "npm": ">=3.10.8"
   },
   "cpu": [
