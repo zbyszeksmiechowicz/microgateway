@@ -5,9 +5,9 @@
 Edge Microgateway can be deployed as a service or as a sidecar gateway in front og your services deployed in kubernetes cluster. Developers faces challenges in exposing their microservices and rely on API Management providers for exposing,securing and managing their apis. This document explains how to deploy microgateway on the kubernetes platform.
 
 # Edgemicro as Service 
-![Edgemicro as Service](/docs/images/service-arch.png)
+![Edgemicro as Service](./docs/images/service-arch.png)
 # Edgemicro as Sidecar 
-![Edgemicro as Sidecar](/docs/images/arch.png)
+![Edgemicro as Sidecar](./docs/images/arch.png)
 
 ## Quick Start
 
@@ -19,7 +19,7 @@ Edge Microgateway can be deployed as a service or as a sidecar gateway in front 
 * Minikube - Coming soon ...
 * GKE
    - Create container cluster in GKE with atleast 3 node and machine size having 2 VCPU each.
-   ![GKE](/docs/images/gke-container.png)
+   ![GKE](./docs/images/gke-container.png)
 
    - Retrieve your credentials for kubectl (replace <cluster-name> with the name of the cluster you want to use, and <zone> with the zone where that cluster is located):
      ```
