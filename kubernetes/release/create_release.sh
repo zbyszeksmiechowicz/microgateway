@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 red=`tput setaf 1`
 green=`tput setaf 2`
 blue=`tput setaf 4`
@@ -9,10 +8,11 @@ reset=`tput sgr0`
 edgemicroctlDist='https://raw.githubusercontent.com/srinandan/edgemicroctl/master/dist'
 ORG=apigee-internal
 REPO=microgateway
+PROJECT_ID=apigee-microgateway
 REQUEST_FILE="$(mktemp /tmp/github.request.XXXX)"
 RESPONSE_FILE="$(mktemp /tmp/github.response.XXXX)"
 
-## Command to build and release edgemicro-k8
+## Command to build and release edgemicro-k8s
 
 usage() {
 
@@ -23,7 +23,6 @@ usage() {
   echo "   -k, --git-key              * Git Key. "
   echo "   -u, --git-user             * Git User. "
   echo "   -r, --release-version      * Release Version. "
-  echo "   -p, --project-id           * GCP Project Id. "
   echo "${reset}"
 
   exit 1
@@ -53,10 +52,6 @@ case $param in
                        shift # past argument
                        shift # past value
                        ;;
-        -p|--project-id )   PROJECT_ID=$2
-                       shift # past argument
-                       shift # past value
-                       ;;					   
         -h|*         ) shift
                        shift
                        usage
@@ -87,11 +82,6 @@ do
     read  -p "${blue}Release Version :${reset}" RELEASE_VERSION
 done
 
-while [ "$PROJECT_ID" = "" ]
-do
-    read  -p "${blue}Project Id :${reset}" PROJECT_ID
-done
-
 while [ "$BUILD_DOCKER" = "" ]
 do
 	read  -p "${blue}Do you want to Build Docker images and push to registry?[Y/n] :${reset}" BUILD_DOCKER
@@ -110,27 +100,14 @@ if [[ "$BUILD_DOCKER" == "y" ]]; then
 	../docker/helloworld/dockerbuild.sh $VERSION $PROJECT_ID
 fi
 
+curl -s -S -o $RESPONSE_FILE https://api.github.com/repos/$ORG/$REPO/releases -H "Accept: application/vnd.github.manifold-preview+json"
 
-curl -s -S -X POST -o $RESPONSE_FILE -u  $GIT_USER:$GIT_KEY "https://api.github.com/https/${ORG}/${REPO}/releases" \
--H 'Content-Type:application/json' \
--d "{
-  \"tag_name\": \"${RELEASE_VERSION}\",
-  \"target_commitish\": \"master\",
-  \"name\": \"${RELEASE_VERSION}\",
-  \"body\": \"Draft Release\",
-  \"draft\": false,
-  \"prerelease\": false
-}"
+#echo $RESPONSE_FILE
 
-
-echo $RESPONSE_FILE
-
-RELEASE_ID=$(cat $RESPONSE_FILE | jq .id)
-UPLOAD_URL=$(cat $RESPONSE_FILE | jq .upload_url)
-
+RELEASE_ID=$(cat $RESPONSE_FILE | jq '.[0].id')
+UPLOAD_URL=$(cat $RESPONSE_FILE | jq '.[0].upload_url')
 UPLOAD_URL=$(echo $UPLOAD_URL | sed 's/{?name,label}//g')
 UPLOAD_URL=$(echo $UPLOAD_URL | sed 's/\"//g')
-
 
 ## Create a temp directory and move all install files here
 rm -fr tmp 
@@ -154,7 +131,7 @@ for os in "${release_os[@]}";
 
 	rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml.bak
 	rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml.bak
-  
+ 
   curl $edgemicroctlDist/${os}/edgemicroctl -o   tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin/edgemicroctl
 	chmod +x tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin/edgemicroctl
 
@@ -164,6 +141,7 @@ for os in "${release_os[@]}";
 
 	
 	EDGEMICRO_UPLOAD_URL=$UPLOAD_URL?name=edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz
+        echo $EDGEMICRO_UPLOAD_URL
 	curl -X POST $EDGEMICRO_UPLOAD_URL -u  $GIT_USER:$GIT_KEY \
 -H "Content-Type:application/octet-stream" --data-binary @edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz
 
