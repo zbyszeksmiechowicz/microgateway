@@ -46,3 +46,36 @@ NOTE: You can now restart Microgateway using this command
 ```
 docker start $(docker ps -aqf name=edgemicro)
 ```
+
+## Enable Custom Plugins
+
+To enable custom plugins to Microgateway, perform the following steps
+
+### Step 1: Add plugins to the docker container 
+```
+FROM gcr.io/apigee-microgateway/edgemicro:2.5.19
+RUN apt-get install unzip
+COPY plugins.zip /opt/apigee/
+RUN chown apigee:apigee /opt/apigee/plugins.zip
+RUN su - apigee -c "unzip /opt/apigee/plugins.zip -d /opt/apigee"
+EXPOSE 8000
+EXPOSE 8443
+ENTRYPOINT ["/tmp/entrypoint.sh"]
+```
+NOTE: Use npm install to add any additional dependencies required by the custom plugins
+
+### Step 2: Create a new Microgateway image (with the plugins)
+```
+docker build -t edgemicroplugins .
+```
+
+### Step 3: Set the plugin directory in the configuration file
+
+```
+edgemicro:
+  ...
+  plugins:
+    dir: /opt/apigee/plugins
+    sequence:
+      - oauth
+```
