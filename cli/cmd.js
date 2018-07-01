@@ -173,9 +173,14 @@ const setup = function setup() {
                     process.exit(1);
                 } else {
                     if (options.apiProxyName && options.target && options.revision && options.basepath) {
-                        //start gateway
+                        if (!validateUrl(options.target)) {
+                            return options.error('target endpoint not a valid url');
+                            process.exit(1);    
+                        }
+                        //create fake credentials - not used anywhere
                         options.key = 'dummy';
                         options.secret = 'dummy';
+                        //start gateway
                         run.start(options);
                         return;
                     } else {
@@ -557,5 +562,15 @@ function promptForPassword(options, cb) {
     }
 }
 
+//check url format
+function validateUrl(target) {
+    try {
+        url.parse(target, true);
+        return true;
+    } catch(err){
+        console.error("Malformed URL: " + err);
+        return false;
+    }
+}
 
 module.exports = setup;
