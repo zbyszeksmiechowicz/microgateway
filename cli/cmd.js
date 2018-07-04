@@ -143,6 +143,10 @@ const setup = function setup() {
             options.processes = options.processes || process.env.EDGEMICRO_PROCESSES;
             options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
             options.configUrl = options.configUrl || process.env.EDGEMICRO_CONFIG_URL;
+            options.apiProxyName = options.apiProxyName || process.env.EDGEMICRO_API_PROXYNAME;
+            options.revision = options.revision || process.env.EDGEMICRO_API_REVISION;
+            options.basepath = options.basepath || process.env.EDGEMICRO_API_BASEPATH;
+            options.target = options.target || process.env.EDGEMICRO_API_TARGET;
 
             if (options.port) {
                 portastic.test(options.port)
