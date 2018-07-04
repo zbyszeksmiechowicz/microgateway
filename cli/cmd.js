@@ -166,25 +166,30 @@ const setup = function setup() {
             if (!options.env) {
                 return options.error('env is required');
             }
-            if (options.apiProxyName || options.target || options.revision || options.basepath || process.env.EDGEMICRO_LOCAL) {
+            if (options.apiProxyName || options.target || options.revision || options.basepath || process.env.EDGEMICRO_LOCAL || process.env.EDGEMICRO_LOCAL_PROXY) {
                 //if any of these are set, look for environment variable
-                if (!process.env.EDGEMICRO_LOCAL) {
-                    return options.error('set the EDGEMICRO_LOCAL variable for apiProxyName parameter');
+                if (!process.env.EDGEMICRO_LOCAL && !process.env.EDGEMICRO_LOCAL_PROXY) {
+                    return options.error('set the EDGEMICRO_LOCAL or EDGEMICRO_LOCAL_PROXY variable for apiProxyName parameter');
+                    process.exit(1);
+                } else if (process.env.EDGEMICRO_LOCAL && process.env.EDGEMICRO_LOCAL_PROXY) {
+                    return options.error('set the EDGEMICRO_LOCAL or EDGEMICRO_LOCAL_PROXY; not both');
                     process.exit(1);
                 } else {
                     if (options.apiProxyName && options.target && options.revision && options.basepath) {
                         if (!validateUrl(options.target)) {
                             return options.error('target endpoint not a valid url');
-                            process.exit(1);    
+                            process.exit(1);
                         }
-                        //create fake credentials - not used anywhere
-                        options.key = 'dummy';
-                        options.secret = 'dummy';
+                        if (process.env.EDGEMICRO_LOCAL) {
+                            //create fake credentials - not used anywhere
+                            options.key = 'dummy';
+                            options.secret = 'dummy';
+                        }
                         //start gateway
                         run.start(options);
                         return;
                     } else {
-                        return options.error('apiProxyName, target, revision and basepath are all mandatory parms when EDGEMICRO_LOCAL is set');
+                        return options.error('apiProxyName, target, revision and basepath are all mandatory parms when EDGEMICRO_LOCAL or EDGEMICRO_LOCAL_PROXY is set');
                         process.exit(1);
                     }
                 }
@@ -219,8 +224,7 @@ const setup = function setup() {
                     console.error("url protocol not supported: " + parsedUrl.protocol);
                     process.exit(1);
                 }
-            } 
-            else {
+            } else {
                 run.start(options);
             }
         });
@@ -382,8 +386,8 @@ const setup = function setup() {
         .option('-e, --env <env>', 'the environment')
         .option('-u, --username <user>', 'username of the organization admin')
         .option('-p, --password <password>', 'password of the organization admin')
-                .option('-k, --key <key>', 'Microgateway Key to be revoked')
-                .option('-s, --secret <secret>', 'Microgateway secret to be revoked')
+        .option('-k, --key <key>', 'Microgateway Key to be revoked')
+        .option('-s, --secret <secret>', 'Microgateway secret to be revoked')
         .description('revoke authentication keys for runtime auth between Microgateway and Edge')
         .action((options) => {
             options.error = optionError;
@@ -500,7 +504,7 @@ const setup = function setup() {
                 rotatekey.rotatekey(options, () => {});
             })
         });
-        
+
     commander
         .command('clean')
         .option('-o, --org <org>', 'the organization')
@@ -567,7 +571,7 @@ function validateUrl(target) {
     try {
         url.parse(target, true);
         return true;
-    } catch(err){
+    } catch (err) {
         console.error("Malformed URL: " + err);
         return false;
     }
