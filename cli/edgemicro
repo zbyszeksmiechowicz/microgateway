@@ -27,8 +27,11 @@ const ltsVersion = 6;
 const experimental = ["v7", "v9"];
 const latest = 10;
 
-console.log('current nodejs version is %s', version)
-console.log('current edgemicro version is %s', edgemicroVersion);
+//don't print versions when obtaining a token. 
+if (!process.argv.includes("token") && !process.argv.includes("get")) {
+    console.log('current nodejs version is %s', version);
+    console.log('current edgemicro version is %s', edgemicroVersion);    
+}
 
 for (var ver in experimental) {
     if (version.includes(experimental[ver])) {
