@@ -144,7 +144,7 @@ const setup = function setup() {
             options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
             options.configUrl = options.configUrl || process.env.EDGEMICRO_CONFIG_URL;
             options.apiProxyName = options.apiProxyName || process.env.EDGEMICRO_API_PROXYNAME;
-            options.revision = options.revision || process.env.EDGEMICRO_API_REVISION;
+            options.revision = options.revision || process.env.EDGEMICRO_API_REVISION || "1";
             options.basepath = options.basepath || process.env.EDGEMICRO_API_BASEPATH;
             options.target = options.target || process.env.EDGEMICRO_API_TARGET;
 
