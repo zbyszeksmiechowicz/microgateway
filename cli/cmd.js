@@ -144,7 +144,7 @@ const setup = function setup() {
             options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
             options.configUrl = options.configUrl || process.env.EDGEMICRO_CONFIG_URL;
             options.apiProxyName = options.apiProxyName || process.env.EDGEMICRO_API_PROXYNAME;
-            options.revision = options.revision || process.env.EDGEMICRO_API_REVISION || "1";
+            options.revision = options.revision || process.env.EDGEMICRO_API_REVISION;
             options.basepath = options.basepath || process.env.EDGEMICRO_API_BASEPATH;
             options.target = options.target || process.env.EDGEMICRO_API_TARGET;
 
@@ -171,6 +171,7 @@ const setup = function setup() {
                 return options.error('env is required');
             }
             if (options.apiProxyName || options.target || options.revision || options.basepath || process.env.EDGEMICRO_LOCAL || process.env.EDGEMICRO_LOCAL_PROXY) {
+                console.log(options.apiProxyName + " - " + options.target +" - " + options.revision + " - " + options.basepath + " - " + process.env.EDGEMICRO_LOCAL + " - " + process.env.EDGEMICRO_LOCAL_PROXY)
                 //if any of these are set, look for environment variable
                 if (!process.env.EDGEMICRO_LOCAL && !process.env.EDGEMICRO_LOCAL_PROXY) {
                     return options.error('set the EDGEMICRO_LOCAL or EDGEMICRO_LOCAL_PROXY variable for apiProxyName parameter');
