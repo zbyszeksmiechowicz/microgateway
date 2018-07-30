@@ -148,6 +148,9 @@ const setup = function setup() {
             options.basepath = options.basepath || process.env.EDGEMICRO_API_BASEPATH;
             options.target = options.target || process.env.EDGEMICRO_API_TARGET;
 
+            debug("EDGEMICRO_LOCAL: " + process.env.EDGEMICRO_LOCAL)
+            debug("EDGEMICRO_LOCAL_PROXY: " + process.env.EDGEMICRO_LOCAL_PROXY)
+
             if (options.port) {
                 portastic.test(options.port)
                     .then(function(isAvailable) {
@@ -171,7 +174,6 @@ const setup = function setup() {
                 return options.error('env is required');
             }
             if (options.apiProxyName || options.target || options.revision || options.basepath || process.env.EDGEMICRO_LOCAL || process.env.EDGEMICRO_LOCAL_PROXY) {
-                console.log(options.apiProxyName + " - " + options.target +" - " + options.revision + " - " + options.basepath + " - " + process.env.EDGEMICRO_LOCAL + " - " + process.env.EDGEMICRO_LOCAL_PROXY)
                 //if any of these are set, look for environment variable
                 if (!process.env.EDGEMICRO_LOCAL && !process.env.EDGEMICRO_LOCAL_PROXY) {
                     return options.error('set the EDGEMICRO_LOCAL or EDGEMICRO_LOCAL_PROXY variable for apiProxyName parameter');
