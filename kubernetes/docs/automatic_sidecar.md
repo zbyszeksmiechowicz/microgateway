@@ -93,11 +93,12 @@ Usage: ./install/kubernetes/webhook-edgemicro-patch.sh [option...]
    -o, --apigee_org           * Apigee Organization.
    -e, --apigee_env           * Apigee Environment.
    -v, --virtual_host         * Virtual Hosts with comma seperated values.The values are like default,secure.
-   -t, --private              y,if you are configuring Private Cloud. Default is n.
+   -i, --private              y,if you are configuring Private Cloud. Default is n.
    -m, --mgmt_url             Management API URL needed if its Private Cloud
    -r, --api_base_path        API Base path needed if its Private Cloud
    -u, --user                 * Apigee Admin Email
    -p, --password             * Apigee Admin Password
+   -t, --token                * Apigee Oauth Token
    -n, --namespace            Namespace where your application is deployed. Default is default
    -k, --key                  * Edgemicro Key. If not specified it will generate.
    -s, --secret               * Edgemicro Secret. If not specified it will generate.
@@ -106,7 +107,7 @@ Usage: ./install/kubernetes/webhook-edgemicro-patch.sh [option...]
 ```
 For ex:
 ```
-./install/kubernetes/webhook-edgemicro-patch.sh -t n -o gaccelerate5 -e test -v default -u <apigee email> -p <apigee-password>  -k <edgemicro key> -s <edgemicro secret> -c "/Users/rajeshmi/.edgemicro/gaccelerate5-test-config.yaml" -n default
+./install/kubernetes/webhook-edgemicro-patch.sh -i n -o gaccelerate5 -e test -v default -u <apigee email> -p <apigee-password>  -k <edgemicro key> -s <edgemicro secret> -c "/Users/rajeshmi/.edgemicro/gaccelerate5-test-config.yaml" -n default
 
 ```
 Run command below to inject the edgemicro config profile in kubernetes.
