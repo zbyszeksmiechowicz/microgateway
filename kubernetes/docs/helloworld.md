@@ -53,8 +53,7 @@ Go to Edge UI and add a API Product.
 - In the API Proxies section, click  + API Proxy and add edgemicro-auth. 
 - Save the API Product
 - Create a Developer App for the API Product.
-
-Get the api key of the app created.
+- Get the consumer key of the app created.
 
 ```
 echo "Call with API Key:"
