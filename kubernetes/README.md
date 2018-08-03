@@ -226,7 +226,7 @@ Use the svc parameter to pass your service file. See the helloworld sample below
 ### Running Bookinfo sample
 [here](./docs/bookinfo.md)
 
-### Container Ports
+### Container Ports and Service Ports for Sidecars
 
 Edgemicro and Service runs on same pod as separate containers. Edgemicro creates a local proxy to your service and thus it requires to know the container port on which it can create a local proxy. The edgemicro container is aware of service port but not the container port. if your container port is same as service port, it picks up the port and create a local proxy on that port.
 
@@ -343,10 +343,6 @@ Example for Sidecar: edgemicroctl -org=trial -env=test -conf=trial-test-config.y
 
 Example for Pod: edgemicroctl -org=trial -env=test -conf=trial-test-config.yaml -svc=myservice.yaml -key=xxxx -sec=xxxx
 ```
-
-### Assumptions
-- It uses app labels in services to identify the deployment. Please ensure you define your services with label app. Refer to examples in helloworld and bookinfo example.
-- At this point, it also expects service port and container port to be same. Refer examples for more details.
 
 
 ## Uninstall Edgemicro
