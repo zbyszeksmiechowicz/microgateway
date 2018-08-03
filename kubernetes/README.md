@@ -211,7 +211,7 @@ If you do not have the edgemicro-sidecar-injector installed, you must use edgemi
 
 
 ```
-kubectl apply -f <(edgemicroctl -org=<org> -env=<env> -key=<edgemicro-key> -sec=<edgemicro-secret> -user=<apigee-user> -pass=<apigee-password> -conf=<file path of org-env-config.yaml> -svc=<your-app-spec>.yaml)
+kubectl apply -f <(edgemicroctl -org=<org> -env=<env> -key=<edgemicro-key> -sec=<edgemicro-secret>  -conf=<file path of org-env-config.yaml> -svc=<your-app-spec>.yaml)
 ```
 
 Use the svc parameter to pass your service file. See the helloworld sample below for demonstration.
@@ -226,6 +226,9 @@ Use the svc parameter to pass your service file. See the helloworld sample below
 ### Running Bookinfo sample
 [here](./docs/bookinfo.md)
 
+### Custom Plugins
+[here](./../docker/edgemicro/README.md)
+
 ### Understanding edgemicroctl
 
 ```
@@ -239,19 +242,17 @@ sec  = Apigee Edge Microgateway Secret (mandatory)
 conf = Apigee Edge Microgateway configuration file (mandatory)
 
 For Sidecar deployment
-user = Apigee Edge Username (mandatory)
-pass = Apigee Edge Password (mandatory)
 svc  = Kubernetes Service configuration file (mandatory)
 
 For Pod deployment
 img  = Apigee Edge Microgateway docker image (mandatory)
 
 Other options:
-murl   = Apigee Edge Management API Endpoint; Default is api.enterprise.apigee.com
 debug  = Enable debug mode (default: false)
 
 
-Example for Sidecar: edgemicroctl -org=trial -env=test -user=trial@apigee.com -pass=Secret123 -conf=trial-test-config.yaml -svc=myservice.yaml -key=xxxx -sec=xxxx
+Example for Sidecar: edgemicroctl -org=trial -env=test -conf=trial-test-config.yaml -svc=myservice.yaml -key=xxxx -sec=xxxx -svc=samples/helloworld/helloworld.yaml
+
 Example for Pod: edgemicroctl -org=trial -env=test -conf=trial-test-config.yaml -svc=myservice.yaml -key=xxxx -sec=xxxx
 ```
 
