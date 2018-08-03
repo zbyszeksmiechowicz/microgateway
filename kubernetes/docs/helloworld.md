@@ -62,7 +62,7 @@ echo "Call with API Key:"
 curl -H 'x-api-key:your-edge-api-key' $GATEWAY_IP:80;echo
 ```
 
-### Uninstalling Sample Service
+### Uninstall Sample Service
 
 ```
 kubectl delete -f samples/helloworld/helloworld.yaml
