@@ -7,10 +7,16 @@ exec 2>&1
 
 echo "Log Location should be: [ $LOG_LOCATION ]"
 
-SERVICE_NAME_UPPERCASE=`echo "${SERVICE_NAME}" | tr '[a-z]' '[A-Z]'`
-SERVICE_PORT_NAME=${SERVICE_NAME_UPPERCASE}_SERVICE_PORT
-SERVICE_PORT=${!SERVICE_PORT_NAME}
 
+if [[ ${CONTAINER_PORT} != "" ]]; then
+    SERVICE_PORT=${CONTAINER_PORT}
+#elif [[ ${SERVICE_NAME} != "" ]]; then
+#  SERVICE_NAME_UPPERCASE=`echo "${SERVICE_NAME}" | tr '[a-z]' '[A-Z]'`
+#  SERVICE_PORT_NAME=${SERVICE_NAME_UPPERCASE}_SERVICE_PORT
+#  SERVICE_PORT=${!SERVICE_PORT_NAME}
+else
+  SERVICE_PORT=$(env | grep SERVICE_PORT_HTTP=| cut -d '=' -f 2)
+fi
 
 #product_name=$proxy_name-product
 proxy_name=edgemicro_${SERVICE_NAME}_service
@@ -31,7 +37,12 @@ if [[ -n "$EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval" ]]; then
   sed -i.back "s/config_change_poll_interval.*/config_change_poll_interval: $EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval/g" /opt/apigee/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
 fi
 
-commandString="cd /opt/apigee && export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR &&  export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -a $proxy_name -v 1 -b / -t http://localhost:$target_port &"
+if [[ ${EDGEMICRO_LOCAL_PROXY} != "1" ]]; then
+  commandString="cd /opt/apigee && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET  &"
+else
+  commandString="cd /opt/apigee && export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR &&  export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -a $proxy_name -v 1 -b / -t http://localhost:$target_port &"
+fi
+
 #echo $commandString
 if [[ ${EDGEMICRO_DOCKER} != "" ]]; then
 	su - apigee -c "$commandString"
