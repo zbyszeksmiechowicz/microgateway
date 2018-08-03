@@ -227,7 +227,58 @@ Use the svc parameter to pass your service file. See the helloworld sample below
 [here](./docs/bookinfo.md)
 
 ### Custom Plugins
-[here](./docker/edgemicro/README.md)
+
+To enable custom plugins to Microgateway, perform the following steps
+
+- Create a Dockerfile and add your plugin:
+
+```
+FROM gcr.io/apigee-microgateway/edgemicro:latest
+RUN apt-get install unzip
+COPY plugins.zip /opt/apigee/
+RUN chown apigee:apigee /opt/apigee/plugins.zip
+RUN su - apigee -c "unzip /opt/apigee/plugins.zip -d /opt/apigee"
+EXPOSE 8000
+EXPOSE 8443
+ENTRYPOINT ["/tmp/entrypoint.sh"]
+```
+
+NOTE: Use npm install to add any additional dependencies required by the custom plugins
+
+- Create a new Microgateway image (with the plugins) and push to repository
+```
+docker build -t edgemicroplugins .
+docker push   gcr.io/your-project/edgemicroplugins
+```
+- Set the plugin directory in the org-env configuration file
+```
+edgemicro:
+  ...
+  plugins:
+    dir: /opt/apigee/plugins
+    sequence:
+      - oauth
+```
+
+- Manual Sidecar Configuration
+For manual sidecar, add img parameter to your deployment. 
+For ex:
+```
+kubectl apply -f <(edgemicroctl -org=myorg -env=test-key=0e3ecea28a64099410594406b30e54439af5265f88fb51ac6ed002f570b602f0 -sec=e3919250bee37c69cb2e5b41170b488e1c1dbc628d94a3911283fe6771209319 -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=gcr.io/your-ptoject/edgemicroplugin:latest -svc=samples/helloworld/helloworld.yaml)
+```
+
+- Automatic Sidecar Configuration
+Edit the installation install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
+Change the containers image to new image.
+```
+containers:
+      - name: edge-microgateway
+        image: gcr.io/your-project/edgemicroplugin:latest
+```
+- Apply changes in cluster
+```
+kubectl apply -f  install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
+```
 
 ### Understanding edgemicroctl
 
