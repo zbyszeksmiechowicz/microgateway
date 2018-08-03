@@ -187,13 +187,13 @@ Edgemicro in sidecar starts as a Local Proxy so api proxy with edgemicro_ is not
 
 Go to Edge UI and add a API Product.
 
-Select Publish > API Products in the side navigation menu.
-Click + API Product. The Product Page Appears.
-Fill out the Product page with name, description, name.
-In the Path section, click + Custom Resources and add the custom Resource Path. In this case add / and /** as Custom Path
-In the API Proxies section, click  + API Proxy and add edgemicro-auth. 
-Save the API Product
-Create a Developer App for the API Product.
+- Select Publish > API Products in the side navigation menu.
+- Click + API Product. The Product Page Appears.
+- Fill out the Product page with name, description, name.
+- In the Path section, click + Custom Resources and add the custom Resource Path. In this case add / and /** as Custom Path
+- In the API Proxies section, click  + API Proxy and add edgemicro-auth. 
+- Save the API Product
+- Create a Developer App for the API Product.
 
 
 ```
