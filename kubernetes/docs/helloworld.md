@@ -7,6 +7,26 @@ npm install edgemicro -g
 edgemicro init
 edgemicro configure -o <org> -e <env> -u <user> -p <password>
 ```
+- Container Port and Service Port
+
+In case the container port of your app is not the same as service port defined in your service spec, add a label containerPort in deployment spec. 
+
+Please refer to the example mentioned in httpbin example  below.
+```
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: httpbin-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: httpbin-app
+        containerPort: "8082"
+
+```
 
 - Deploy Sample Service
 ```
