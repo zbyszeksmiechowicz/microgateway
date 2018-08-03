@@ -104,9 +104,13 @@ done
 
 while [ "$isTokenAuth" = "" ]
 do
-    read  -p "${blue}Authenticate with OAuth Token (\"n\",\"Y\") [N/y]:${reset}" isTokenAuth
-    if [[ "$isTokenAuth" = "" ]]; then
+    if [ "$adminEmail" != "" ] && [ "$adminPasswd" != "" ]; then
       isTokenAuth="n"
+    else
+      read  -p "${blue}Authenticate with OAuth Token (\"n\",\"Y\") [N/y]:${reset}" isTokenAuth
+      if [[ "$isTokenAuth" = "" ]]; then
+        isTokenAuth="n"
+      fi
     fi
 done
 
@@ -143,7 +147,10 @@ done
 
 while [ "$vhost_name" = "" ]
 do
-    read  -p "${blue}Virtual Host [required]:${reset}" vhost_name
+    read  -p "${blue}Virtual Host [default]:${reset}" vhost_name
+    if [[ "$vhost_name" = "" ]]; then
+     vhost_name="default"
+  fi
 done
 
 
