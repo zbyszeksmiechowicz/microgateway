@@ -226,6 +226,35 @@ Use the svc parameter to pass your service file. See the helloworld sample below
 ### Running Bookinfo sample
 [here](./docs/bookinfo.md)
 
+### Container Ports
+
+Edgemicro and Service runs on same pod as separate containers. Edgemicro creates a local proxy to your service and thus it requires to know the container port on which it can create a local proxy. The edgemicro container is aware of service port but not the container port. if your container port is same as service port, it picks up the port and create a local proxy on that port.
+
+In case, you run your container on a seperate port than your service port, edgemicro needs to be aware of the containerport. In such case, edgemicro looks for “containerPort” label in your deployment template metadata and creates local connection on that port.
+
+For ex :
+```
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: httpbin-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: httpbin-app
+        containerPort: "8082"
+    spec:
+      containers:
+      - name: httpbin
+        image: gcr.io/apigee-microgateway/httpbin:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+---
+```
+
 ### Custom Plugins
 
 To enable custom plugins to Microgateway, perform the following steps
@@ -259,6 +288,14 @@ edgemicro:
     sequence:
       - oauth
 ```
+- Service Deployment 
+Update edgemicro deployment with new image:
+
+for ex:
+```
+kubectl apply -f <(edgemicroctl -org=myorg -env=test-key=0e3ecea28a64099410594406b30e54439af5265f88fb51ac6ed002f570b602f0 -sec=e3919250bee37c69cb2e5b41170b488e1c1dbc628d94a3911283fe6771209319 -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=gcr.io/your-ptoject/edgemicroplugin:latest)
+```
+
 
 - Manual Sidecar Configuration
 For manual sidecar, add img parameter to your deployment. 

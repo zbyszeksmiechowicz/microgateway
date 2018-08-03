@@ -17,14 +17,14 @@ Please refer the httpbin samples:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: httpbin-deployment
+  name: helloworld
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: httpbin-app
-        containerPort: "8082"
+        app: helloworld
+        containerPort: "8081"
 
 ```
 

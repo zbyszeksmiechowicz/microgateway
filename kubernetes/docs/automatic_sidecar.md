@@ -148,7 +148,7 @@ kube-system        Active    1d
 
 - Container Port and Service Port
 
-In case the container port of your app is not the same as service port defined in your service spec, add a label **containerPort** in deployment spec. 
+In case the container port of your app is not the same as service port defined in your service spec, add a label **containerPort** in deployment spec. In helloworld samples, they are same.
 
 Please refer the httpbin samples:
 ```
