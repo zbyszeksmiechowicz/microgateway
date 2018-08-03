@@ -227,7 +227,7 @@ Use the svc parameter to pass your service file. See the helloworld sample below
 [here](./docs/bookinfo.md)
 
 ### Custom Plugins
-[here](./../docker/edgemicro/README.md)
+[here](./docker/edgemicro/README.md)
 
 ### Understanding edgemicroctl
 
