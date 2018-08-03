@@ -8,7 +8,7 @@ npm install edgemicro -g
 edgemicro init
 edgemicro configure -o <org> -e <env> -u <user> -p <password>
 
-kubectl apply -f <(edgemicroctl -org=<org> -env=<env> -key=<edgemicro-key> -sec=<edgemicro-sec> -user=<apigee-user> -pass=<apigee-password> -conf=<file path of org-env-config.yaml> -svc=samples/helloworld/helloworld.yaml)
+kubectl apply -f <(edgemicroctl -org=<org> -env=<env> -key=<edgemicro-key> -sec=<edgemicro-sec> -conf=<file path of org-env-config.yaml> -svc=samples/helloworld/helloworld.yaml)
 ```
 
 
