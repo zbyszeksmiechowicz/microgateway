@@ -5,15 +5,15 @@ green=`tput setaf 2`
 blue=`tput setaf 4`
 reset=`tput sgr0`
 
-edgemicroctlDist='https://raw.githubusercontent.com/srinandan/edgemicroctl/master/dist'
+edgemicroctlDist='https://github.com/apigee-internal/microgateway/releases/tag/2.5.23-beta'
 #ORG=apigee-internal
 #REPO=microgateway
 #PROJECT_ID=apigee-microgateway
 
-###Test purpose only
-ORG=edgemicro-kubernetes
-REPO=edgemicro-k8
-PROJECT_ID=edge-apigee
+### repo details
+ORG=apigee-internal
+REPO=microgateway
+PROJECT_ID=apigee-microgateway
 
 REQUEST_FILE="$(mktemp /tmp/github.request.XXXX)"
 RESPONSE_FILE="$(mktemp /tmp/github.response.XXXX)"
