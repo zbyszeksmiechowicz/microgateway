@@ -17,3 +17,8 @@ archive:
   format_overrides:
   - goos: windows
     format: zip
+git:
+  short_hash: true
+release:
+  draft: true
+  prerelease: true
