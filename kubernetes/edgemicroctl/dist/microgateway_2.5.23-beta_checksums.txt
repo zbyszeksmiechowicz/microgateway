@@ -1,4 +1,0 @@
-121c581ea27ca48193f35ff112ff4c13ee0cdbeb8f4f5329b5265c8092ceb0cd  microgateway_2.5.23-beta_darwin_386.tar.gz
-a9c9e186780e8ee1128f5832d3e5a9e2fa69ad477c550c6d722da2b40459abc4  microgateway_2.5.23-beta_linux_386.tar.gz
-c74a7c13e560426a7be1828c2a76fbc60d954eeab4ff1474ae4f95befcb82e72  microgateway_2.5.23-beta_linux_amd64.tar.gz
-e521ce28f1afd0da855ec22286ebb01430b509611bd6e01d6c91a65419f32bf2  microgateway_2.5.23-beta_darwin_amd64.tar.gz
