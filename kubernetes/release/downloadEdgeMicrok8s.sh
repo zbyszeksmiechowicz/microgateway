@@ -1,44 +1,56 @@
 #! /bin/sh
 #
-# Download edgemicro-k8s
+# Download microgateway
 
 OS="$(uname)"
 if [ "x${OS}" = "xDarwin" ] ; then
   arch="$(uname -m)"
   if [ "y${arch}" = "yx86_64" ]; then
-  	OSEXT="darwinamd64"
+  	OSEXT="Darwin_x86_64"
   else
-  	OSEXT="darwin386"
+  	OSEXT="Darwin_386"
   fi
 else
   # TODO we should check more/complain if not likely to work, etc...
   arch="$(uname -m)"
   if [ "y${arch}" = "yx86_64" ]; then
-  	OSEXT="linuxamd64"
+  	OSEXT="Linux_x86_64"
   else
-  	OSEXT="linux386"
+  	OSEXT="Linux_386"
   fi
 fi
 
-
-
-if [ "x${EDGEMICRO_VERSION}" = "x" ] ; then
-  EDGEMICRO_VERSION=$(curl -L -s https://api.github.com/repos/apigee-internal/microgateway/releases/latest | \
+tag=$1
+if [[ "$tag" == "" ]]; then
+  if [ "x${EDGEMICRO_VERSION}" = "x" ] ; then
+    EDGEMICRO_VERSION=$(curl -L -s https://api.github.com/repos/apigee-internal/microgateway/releases/latest | \
                   grep tag_name | sed "s/ *\"tag_name\": *\"\(.*\)\",*/\1/")
+  fi
+
+else
+
+  if [ "x${EDGEMICRO_VERSION}" = "x" ] ; then
+    EDGEMICRO_VERSION=$(curl -L -s https://api.github.com/repos/apigee-internal/microgateway/releases/tags/$tag | \
+                  grep tag_name | sed "s/ *\"tag_name\": *\"\(.*\)\",*/\1/")
+  fi
+
 fi
 
-NAME="edgemicro-k8s-$EDGEMICRO_VERSION-$OSEXT"
 
-echo $NAME
+NAME="microgateway_${OSEXT}"
 
 
 URL="https://github.com/apigee-internal/microgateway/releases/download/${EDGEMICRO_VERSION}/${NAME}.tar.gz"
 echo "Downloading $NAME from $URL ..."
-curl -L "$URL" | tar xz
+
+mkdir -p $NAME && cd $NAME && curl -L "$URL" | tar xz && mkdir -p bin && mv edgemicroctl bin/edgemicroctl
 
 # TODO: change this so the version is in the tgz/directory name (users trying multiple versions)
+echo "done"
+
 echo "Downloaded into $NAME:"
-ls $NAME
-BINDIR="$(cd $NAME/bin; pwd)"
+
+BINDIR="$(cd bin; pwd)"
 echo "Add $BINDIR to your path; e.g copy paste in your shell and/or ~/.profile:"
 echo "export PATH=\"\$PATH:$BINDIR\""
+

@@ -5,7 +5,7 @@ green=`tput setaf 2`
 blue=`tput setaf 4`
 reset=`tput sgr0`
 
-edgemicroctlDist='https://github.com/apigee-internal/microgateway/releases/tag/2.5.23-beta'
+#edgemicroctlDist='https://github.com/apigee-internal/microgateway/blob/master/kubernetes/edgemicroctl/dist'
 #ORG=apigee-internal
 #REPO=microgateway
 #PROJECT_ID=apigee-microgateway
@@ -18,7 +18,7 @@ PROJECT_ID=apigee-microgateway
 REQUEST_FILE="$(mktemp /tmp/github.request.XXXX)"
 RESPONSE_FILE="$(mktemp /tmp/github.response.XXXX)"
 
-## Command to build and release edgemicro-k8s
+## Command to build and release microgateway
 
 usage() {
 
@@ -107,69 +107,71 @@ if [[ "$BUILD_DOCKER" == "y" ]]; then
   ../docker/httpbin/dockerbuild.sh $VERSION $PROJECT_ID
 fi
 
-curl -s -S -o $RESPONSE_FILE https://api.github.com/repos/$ORG/$REPO/releases -H "Accept: application/vnd.github.manifold-preview+json"
-
-#echo $RESPONSE_FILE
-
-RELEASE_ID=$(cat $RESPONSE_FILE | jq '.[0].id')
-UPLOAD_URL=$(cat $RESPONSE_FILE | jq '.[0].upload_url')
-UPLOAD_URL=$(echo $UPLOAD_URL | sed 's/{?name,label}//g')
-UPLOAD_URL=$(echo $UPLOAD_URL | sed 's/\"//g')
-
-## Create a temp directory and move all install files here
-rm -fr tmp 
-mkdir -p tmp
-
-release_os=("darwinamd64" "darwin386" "linux386" "linuxamd64")
-#release_os=("darwinamd64")
-
-for os in "${release_os[@]}"; 
-	do echo ${os};
-	mkdir -p tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}
-	mkdir -p tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin
-	cp -fr ../install tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install
-	cp -fr ../samples tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples
-	cp version.txt tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/
-	echo $RELEASE_VERSION > tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/version.txt
-
-	# Replace version information
-	sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
-	sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml
-  sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld.yaml
-  sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld-service.yaml
-  sed -i.bak s/latest/$VERSION/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/httpbin/httpbin.yaml
 
 
-  sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
-  sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml
-  sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld.yaml
-  sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld-service.yaml
-  sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/httpbin/httpbin.yaml
+
+# curl -s -S -o $RESPONSE_FILE https://api.github.com/repos/$ORG/$REPO/releases -H "Accept: application/vnd.github.manifold-preview+json"
 
 
-	rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml.bak
-	rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml.bak
-  rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld.yaml.bak
-  rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld-service.yaml.bak
-  rm -fr tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/samples/httpbin/httpbin.yaml.bak
+# RELEASE_ID=$(cat $RESPONSE_FILE | jq '.[0].id')
+# UPLOAD_URL=$(cat $RESPONSE_FILE | jq '.[0].upload_url')
+# UPLOAD_URL=$(echo $UPLOAD_URL | sed 's/{?name,label}//g')
+# UPLOAD_URL=$(echo $UPLOAD_URL | sed 's/\"//g')
+
+# ## Create a temp directory and move all install files here
+# rm -fr tmp 
+# mkdir -p tmp
+
+# release_os=("darwin_amd64" "darwin_386" "linux_386" "linux_amd64")
+# #release_os=("darwinamd64")
+
+# for os in "${release_os[@]}"; 
+# 	do echo ${os};
+# 	mkdir -p tmp/microgateway-${RELEASE_VERSION}-${os}
+# 	mkdir -p tmp/microgateway-${RELEASE_VERSION}-${os}/bin
+# 	cp -fr ../install tmp/microgateway-${RELEASE_VERSION}-${os}/install
+# 	cp -fr ../samples tmp/microgateway-${RELEASE_VERSION}-${os}/samples
+# 	cp version.txt tmp/microgateway-${RELEASE_VERSION}-${os}/
+# 	echo $RELEASE_VERSION > tmp/microgateway-${RELEASE_VERSION}-${os}/version.txt
+
+# 	# Replace version information
+# 	sed -i.bak s/latest/$VERSION/g tmp/microgateway-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
+# 	sed -i.bak s/latest/$VERSION/g tmp/microgateway-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml
+#   sed -i.bak s/latest/$VERSION/g tmp/microgateway-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld.yaml
+#   sed -i.bak s/latest/$VERSION/g tmp/microgateway-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld-service.yaml
+#   sed -i.bak s/latest/$VERSION/g tmp/microgateway-${RELEASE_VERSION}-${os}/samples/httpbin/httpbin.yaml
 
 
-  curl $edgemicroctlDist/${os}/edgemicroctl -o   tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin/edgemicroctl
-	chmod +x tmp/edgemicro-k8s-${RELEASE_VERSION}-${os}/bin/edgemicroctl
+#   sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/microgateway-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
+#   sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/microgateway-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml
+#   sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/microgateway-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld.yaml
+#   sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/microgateway-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld-service.yaml
+#   sed -i.bak s/apigee-microgateway/$PROJECT_ID/g tmp/microgateway-${RELEASE_VERSION}-${os}/samples/httpbin/httpbin.yaml
 
-	cd tmp
 
-	tar -czvf edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz edgemicro-k8s-${RELEASE_VERSION}-${os}
+# 	rm -fr tmp/microgateway-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml.bak
+# 	rm -fr tmp/microgateway-${RELEASE_VERSION}-${os}/install/kubernetes/edgemicro-sidecar-injector.yaml.bak
+#   rm -fr tmp/microgateway-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld.yaml.bak
+#   rm -fr tmp/microgateway-${RELEASE_VERSION}-${os}/samples/helloworld/helloworld-service.yaml.bak
+#   rm -fr tmp/microgateway-${RELEASE_VERSION}-${os}/samples/httpbin/httpbin.yaml.bak
+
+
+#   curl $edgemicroctlDist/${os}/edgemicroctl -o   tmp/microgateway-${RELEASE_VERSION}-${os}/bin/edgemicroctl
+# 	chmod +x tmp/microgateway-${RELEASE_VERSION}-${os}/bin/edgemicroctl
+
+# 	cd tmp
+
+# 	tar -czvf microgateway-${RELEASE_VERSION}-${os}.tar.gz microgateway-${RELEASE_VERSION}-${os}
 
 	
-	EDGEMICRO_UPLOAD_URL=$UPLOAD_URL?name=edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz
-        echo $EDGEMICRO_UPLOAD_URL
-	curl -X POST $EDGEMICRO_UPLOAD_URL -u  $GIT_USER:$GIT_KEY \
--H "Content-Type:application/octet-stream" --data-binary @edgemicro-k8s-${RELEASE_VERSION}-${os}.tar.gz
+# 	EDGEMICRO_UPLOAD_URL=$UPLOAD_URL?name=microgateway-${RELEASE_VERSION}-${os}.tar.gz
+#         echo $EDGEMICRO_UPLOAD_URL
+# 	curl -X POST $EDGEMICRO_UPLOAD_URL -u  $GIT_USER:$GIT_KEY \
+# -H "Content-Type:application/octet-stream" --data-binary @microgateway-${RELEASE_VERSION}-${os}.tar.gz
 
-	rm -fr edgemicro-k8s-${RELEASE_VERSION}-${os}
-	cd ..
+# 	rm -fr microgateway-${RELEASE_VERSION}-${os}
+# 	cd ..
 
-done
+# done
 
-rm -fr tmp
+# rm -fr tmp
