@@ -39,7 +39,7 @@ Edge Microgateway can be deployed as a service or as a sidecar gateway in front 
       ```
     If you are downloading a particular version, use this command :
     ```
-        curl -L https://raw.githubusercontent.com/apigee-internal/microgateway/master/kubernetes/release/downloadEdgeMicrok8s.sh 2.5.24-beta | sh - 
+        curl -L https://raw.githubusercontent.com/apigee-internal/microgateway/master/kubernetes/release/downloadEdgeMicrok8s.sh | sh -s  2.5.24-beta
       ```
 
 2. It extracts the package in the current location with a folder named microgateway-<os>-<arch>
