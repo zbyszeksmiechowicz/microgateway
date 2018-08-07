@@ -42,14 +42,14 @@ Edge Microgateway can be deployed as a service or as a sidecar gateway in front 
         curl -L https://raw.githubusercontent.com/apigee-internal/microgateway/master/kubernetes/release/downloadEdgeMicrok8s.sh | sh -s  2.5.24-beta
       ```
 
-2. It extracts the package in the current location with a folder named microgateway-<os>-<arch>
+2. It extracts the package in the current location with a folder named microgateway-os-arch
     * Installation .yaml files for Kubernetes in install/
     * Sample applications in samples/
     * The edgemicroctl client binary in the bin/ directory. edgemicroctl is used when manually injecting Edgemicro as a sidecar gateway or Service.
 
-3.  Change directory to microgateway package. For example, if the package is microgateway-Darwin_x86_64
+3.  Change directory to microgateway package. For example, if the package is microgateway_Darwin_x86_64
     ```
-    cd  microgateway-Darwin_x86_64
+    cd  microgateway_Darwin_x86_64
     ```
 4.  Add the edgemicroctl client to your PATH. For example, run the following command on a MacOS or Linux
 system:
