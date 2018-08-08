@@ -98,7 +98,7 @@ Usage: ./install/kubernetes/webhook-edgemicro-patch.sh [option...]
    -r, --api_base_path        API Base path needed if its Private Cloud
    -u, --user                 * Apigee Admin Email
    -p, --password             * Apigee Admin Password
-   -t, --token                * Apigee Oauth Token
+   -t, --token                * Apigee Oauth Token File (Absolute Path)
    -n, --namespace            Namespace where your application is deployed. Default is default
    -k, --key                  * Edgemicro Key. If not specified it will generate.
    -s, --secret               * Edgemicro Secret. If not specified it will generate.
