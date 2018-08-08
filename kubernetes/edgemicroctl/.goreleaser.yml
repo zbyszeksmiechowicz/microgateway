@@ -1,5 +1,4 @@
 # .goreleaser.yml
-project_name: edgemicroctl
 builds:
   -
     main: ./src/main.go
