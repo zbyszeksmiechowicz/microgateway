@@ -62,7 +62,8 @@ system:
     kubectl apply -f install/kubernetes/edgemicro.yaml
     ```
 
-6. Confgure nginx ingress controller.
+6. Confgure nginx ingress controller. This step is required if you are running on a GCP and you have a Loadbalancer. 
+
     ```
     kubectl apply -f install/kubernetes/edgemicro-nginx-gke.yaml
     ```
@@ -262,7 +263,28 @@ spec:
 
 To enable custom plugins to Microgateway, perform the following steps
 
-- Create a Dockerfile and add your plugin:
+- Create a directory structure as given below and place your custom plugins
+```
+plugin
+  |
+  |-- plugins
+    |
+    |- response-uppercase
+    |     |
+    |     |- index.js
+    |     |- package.json
+    |- request-headers
+    |     | - index.js
+          | - package.json
+
+```
+- From the plugin folder, create the zip for entire plugins folder.
+```
+plugin> zip -r plugins.zip plugins/
+
+```
+
+- Create a Dockerfile and add place this in plugin folder:
 
 ```
 FROM gcr.io/apigee-microgateway/edgemicro:latest
@@ -275,36 +297,37 @@ EXPOSE 8443
 ENTRYPOINT ["/tmp/entrypoint.sh"]
 ```
 
-NOTE: Use npm install to add any additional dependencies required by the custom plugins
 
-- Create a new Microgateway image (with the plugins) and push to repository
+- Create a new Microgateway image (with the plugins) and push to your docker repository
 ```
 docker build -t edgemicroplugins .
-docker push   gcr.io/your-project/edgemicroplugins
+docker tag edgemicroplugins docker.io/your-project/edgemicroplugins
+docker push   docker.io/your-project/edgemicroplugins
 ```
-- Set the plugin directory in the org-env configuration file
+- Set the plugin sequence in the org-env configuration file
 ```
 edgemicro:
   ...
   plugins:
-    dir: /opt/apigee/plugins
     sequence:
       - oauth
-```
-- Service Deployment 
-Update edgemicro deployment with new image:
+      - response-uppercase
 
+```
+
+- Service Deployment Configuration
+
+* Update edgemicro deployment with new image:
 for ex:
 ```
-kubectl apply -f <(edgemicroctl -org=myorg -env=test-key=0e3ecea28a64099410594406b30e54439af5265f88fb51ac6ed002f570b602f0 -sec=e3919250bee37c69cb2e5b41170b488e1c1dbc628d94a3911283fe6771209319 -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=gcr.io/your-ptoject/edgemicroplugin:latest)
+kubectl apply -f <(edgemicroctl -org=myorg -env=test -key=0e3ecea28a64099410594406b30e54439af5265f88fb -sec=e3919250bee37c69cb2e5b41170b488e1c1dbc6 -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=docker.io/your-ptoject/edgemicroplugin:latest)
 ```
-
 
 - Manual Sidecar Configuration
 For manual sidecar, add img parameter to your deployment. 
 For ex:
 ```
-kubectl apply -f <(edgemicroctl -org=myorg -env=test-key=0e3ecea28a64099410594406b30e54439af5265f88fb51ac6ed002f570b602f0 -sec=e3919250bee37c69cb2e5b41170b488e1c1dbc628d94a3911283fe6771209319 -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=gcr.io/your-ptoject/edgemicroplugin:latest -svc=samples/helloworld/helloworld.yaml)
+kubectl apply -f <(edgemicroctl -org=myorg -env=test-key=0e3ecea28a64099410594406b30e54439af5265f8 -sec=e3919250bee37c69cb2e5b41170b488e1c1d -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=docker.io/your-project/edgemicroplugin:latest -svc=samples/helloworld/helloworld.yaml)
 ```
 
 - Automatic Sidecar Configuration
@@ -313,14 +336,130 @@ Change the containers image to new image.
 ```
 containers:
       - name: edge-microgateway
-        image: gcr.io/your-project/edgemicroplugin:latest
+        image: docker.io/your-project/edgemicroplugin:latest
 ```
 - Apply changes in cluster
 ```
 kubectl apply -f  install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
 ```
 
+### Scaling Deployment
+If you have deployed the edgemicro in sidecar, by default it comes with 1 replica. You can use kubernetes scaling principles to scale your replicas
+
+```
+kubectl get deployments
+
+NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+helloworld   1         1         1            1           3m
+
+```
+- Edit deployment and change the replica from 1 to 2
+```
+kubectl edit deployment helloworld
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: helloworld
+
+```
+- Check deployment and pods
+```
+kubectl get deployments
+NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+helloworld   2         2         2            1           5m
+
+kubectl get pods
+NAME                          READY     STATUS    RESTARTS   AGE
+helloworld-7d5f5b6769-nm7zd   2/2       Running   0          30s
+helloworld-7d5f5b6769-vcq6m   2/2       Running   0          6m
+
+```
+
+### Configuration Change 
+
+There can be cases when you have to modify your configuration files. For example you want to add a new policy to your service or change some existing configuration
+
+Edgemicro Configurations are stored as a kuberentes secret object  called mgwsecret. 
+
+- Create a secret configuration file secret.yaml as shown below :
+
+```
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mgwsecret
+type: Opaque
+data:
+  mgorg: EDGEMICRO_ORG
+  mgenv: EDGEMICRO_ENV
+  mgkey: EDGEMICRO_KEY
+  mgsecret: EDGEMICRO_SECRET
+  mgconfig: EDGEMICRO_CONFIG
+---
+```
+
+- specify the base64 encoded value of EDGEMICRO_ORG,EDGEMICRO_ENV,EDGEMICRO_KEY,EDGEMICRO_SECRET
+
+```
+echo -n "your-org" | base64 | tr -d '\n'
+echo -n "your-org-env" | base64 | tr -d '\n'
+echo -n "your-mg-key" | base64 | tr -d '\n'
+echo -n "your-mg-secret" | base64 | tr -d '\n'
+
+```
+
+- Base64 Encode twice the contents of your config file with desired changes. 
+```
+cat ~/.edgemicro/org-env-config.yaml | base64 | tr -d '\n' | base64  | tr -d '\n'
+```
+
+- Apply changes to kubernetes on the namespace where your service is running.
+```
+kubectl apply -f secret.yaml -n <your name space>
+```
+
+- These new changes are still not picked up by existing microgateway pods. However the new pods will get the changes. You can delete the existing pod so that deployment creates a new pod that picks up the change 
+
+ex for sidecar:
+
+```
+kubectl get pods
+NAME                          READY     STATUS    RESTARTS   AGE
+helloworld-7d5f5b6769-vcq6m   2/2       Running   0          32m
+
+kubectl delete pod helloworld-7d5f5b6769-vcq6m
+pod "helloworld-7d5f5b6769-vcq6m" deleted
+
+kubectl get pods
+NAME                          READY     STATUS        RESTARTS   AGE
+helloworld-7d5f5b6769-cr4z5   2/2       Running       0          5s
+helloworld-7d5f5b6769-vcq6m   0/2       Terminating   0          32m
+```
+
+### Multiple Edgemicro configuration
+
+There may be scenarios where each service may require different set of policy. For ex Service A needs spike arrest and Service B needs oauth.
+
+This can be handled by namespaces. Deploy serviceA and ServiceB  in seperate namespace. Edgemicro Configurations are specific to a namespace.
+
+An example for manual sidecar would be as follows:
+
+```
+kubectl apply -f <(edgemicroctl -org=myorgA -env=test-key=0e3ecea28a64099410594406b30e54439af5265f8 -sec=e3919250bee37c69cb2e5b41170b488e1c1d -conf=/Users/joed/.edgemicro/orgA-test-config.yaml -svc=samples/helloworld/helloworld.yaml) -n serviceA
+
+```
+
+```
+kubectl apply -f <(edgemicroctl -org=myorgB -env=test-key=0e3ecea28a64099410594406b30e54439af5265f8 -sec=e3919250bee37c69cb2e5b41170b488e1c1d -conf=/Users/joed/.edgemicro/orgB-test-config.yaml -svc=samples/helloworld/helloworld.yaml) -n serviceB
+
+```
+
 ### Understanding edgemicroctl
+
+edgemicroctl is a tool that allows you to deploy edgemicro in a kubernetes container. You can use this for edgemicro as service deployment or manual sidecar deployment.
 
 ```
 Usage: edgemicroctl -org=<orgname> -env=<envname> -user=<username> -pass=<password> -conf=<conf file>
@@ -335,11 +474,14 @@ conf = Apigee Edge Microgateway configuration file (mandatory)
 For Sidecar deployment
 svc  = Kubernetes Service configuration file (mandatory)
 
-For Pod deployment
-img  = Apigee Edge Microgateway docker image (mandatory)
-
 Other options:
+nam    = Kubernetes namespace; default is default
+mgVer  = Microgateway version; default is latest
+img  = Apigee Edge Microgateway docker image (optional)
 debug  = Enable debug mode (default: false)
+
+
+Example for Sidecar: edgemicroctl -org=trial -env=test -conf=trial-test-config.yaml -svc=myservice.yaml -key=xxxx -sec=xxxx
 
 
 Example for Sidecar: edgemicroctl -org=trial -env=test -conf=trial-test-config.yaml -svc=myservice.yaml -key=xxxx -sec=xxxx -svc=samples/helloworld/helloworld.yaml
