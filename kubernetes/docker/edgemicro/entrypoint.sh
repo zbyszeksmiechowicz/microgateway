@@ -38,12 +38,11 @@ if [[ -n "$EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval" ]]; then
 fi
 
 if [[ ${EDGEMICRO_LOCAL_PROXY} != "1" ]]; then
-  commandString="cd /opt/apigee && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET  &"
+  commandString="cd /opt/apigee && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET  -d /opt/apigee/plugins &"
 else
-  commandString="cd /opt/apigee && export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR &&  export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -a $proxy_name -v 1 -b / -t http://localhost:$target_port &"
+  commandString="cd /opt/apigee && export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR &&  export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -d /opt/apigee/plugins -a $proxy_name -v 1 -b / -t http://localhost:$target_port  &"
 fi
 
-#echo $commandString
 if [[ ${EDGEMICRO_DOCKER} != "" ]]; then
 	su - apigee -c "$commandString"
 else 
