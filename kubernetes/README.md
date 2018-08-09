@@ -320,31 +320,32 @@ edgemicro:
 * Update edgemicro deployment with new image:
 for ex:
 ```
-kubectl apply -f <(edgemicroctl -org=myorg -env=test -key=0e3ecea28a64099410594406b30e54439af5265f88fb -sec=e3919250bee37c69cb2e5b41170b488e1c1dbc6 -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=docker.io/your-ptoject/edgemicroplugin:latest)
+kubectl apply -f <(edgemicroctl -org=myorg -env=test -key=0e3ecea28a64099410594406b30e54439af5265f88fb -sec=e3919250bee37c69cb2e5b41170b488e1c1dbc6 -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=docker.io/your-ptoject/edgemicroplugins:latest)
 ```
 
 - Manual Sidecar Configuration
 For manual sidecar, add img parameter to your deployment. 
 For ex:
 ```
-kubectl apply -f <(edgemicroctl -org=myorg -env=test-key=0e3ecea28a64099410594406b30e54439af5265f8 -sec=e3919250bee37c69cb2e5b41170b488e1c1d -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=docker.io/your-project/edgemicroplugin:latest -svc=samples/helloworld/helloworld.yaml)
+kubectl apply -f <(edgemicroctl -org=myorg -env=test-key=0e3ecea28a64099410594406b30e54439af5265f8 -sec=e3919250bee37c69cb2e5b41170b488e1c1d -conf=/Users/jdoe/.edgemicro/apigeesearch-test-config.yaml -img=docker.io/your-project/edgemicroplugins:latest -svc=samples/helloworld/helloworld.yaml)
 ```
 
 - Automatic Sidecar Configuration
 Edit the installation install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
-Change the containers image to new image.
+. Change the containers image to new image.
 ```
 containers:
       - name: edge-microgateway
-        image: docker.io/your-project/edgemicroplugin:latest
+        image: docker.io/your-project/edgemicropluging:latest
 ```
-- Apply changes in cluster
+Apply changes to cluster
 ```
 kubectl apply -f  install/kubernetes/edgemicro-sidecar-injector-configmap-release.yaml
 ```
 
 ### Scaling Deployment
-If you have deployed the edgemicro in sidecar, by default it comes with 1 replica. You can use kubernetes scaling principles to scale your replicas
+
+If you have deployed edgemicro as sidecar, by default it comes with 1 replica. You can use kubernetes scaling principles to scale your deployments
 
 ```
 kubectl get deployments
@@ -379,7 +380,7 @@ helloworld-7d5f5b6769-vcq6m   2/2       Running   0          6m
 
 ### Configuration Change 
 
-There can be cases when you have to modify your configuration files. For example you want to add a new policy to your service or change some existing configuration
+There can be cases when you need to modify your configuration files. For example you want to add a new policy sequence to your service or you change some existing parameters.
 
 Edgemicro Configurations are stored as a kuberentes secret object  called mgwsecret. 
 
@@ -411,7 +412,7 @@ echo -n "your-mg-secret" | base64 | tr -d '\n'
 
 ```
 
-- Base64 Encode twice the contents of your config file with desired changes. 
+- Once you have made desired changes to your config, Base64 Encode twice the contents of  config file. 
 ```
 cat ~/.edgemicro/org-env-config.yaml | base64 | tr -d '\n' | base64  | tr -d '\n'
 ```
@@ -423,7 +424,7 @@ kubectl apply -f secret.yaml -n <your name space>
 
 - These new changes are still not picked up by existing microgateway pods. However the new pods will get the changes. You can delete the existing pod so that deployment creates a new pod that picks up the change 
 
-ex for sidecar:
+ex: for sidecar:
 
 ```
 kubectl get pods
@@ -445,12 +446,14 @@ There may be scenarios where each service may require different set of policy. F
 
 This can be handled by namespaces. Deploy serviceA and ServiceB  in seperate namespace. Edgemicro Configurations are specific to a namespace.
 
-An example for manual sidecar would be as follows:
+You can use -n option to specify namespace in your manual sidecar or service deployment
 
+For ex: This deploys ServiceA in ServiceA namespace with its own configuration
 ```
 kubectl apply -f <(edgemicroctl -org=myorgA -env=test-key=0e3ecea28a64099410594406b30e54439af5265f8 -sec=e3919250bee37c69cb2e5b41170b488e1c1d -conf=/Users/joed/.edgemicro/orgA-test-config.yaml -svc=samples/helloworld/helloworld.yaml) -n serviceA
 
 ```
+This deploys ServiceB in ServiceB namespace with its own configuration
 
 ```
 kubectl apply -f <(edgemicroctl -org=myorgB -env=test-key=0e3ecea28a64099410594406b30e54439af5265f8 -sec=e3919250bee37c69cb2e5b41170b488e1c1d -conf=/Users/joed/.edgemicro/orgB-test-config.yaml -svc=samples/helloworld/helloworld.yaml) -n serviceB
