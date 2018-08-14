@@ -116,7 +116,7 @@ if you use OAuth2 to access Management API, get a OAuth2 Apigee token. Please re
 You can pass the -t parameter with the absolute path of the token file. 
 For ex:
 ```
-./install/kubernetes/webhook-edgemicro-patch.sh -i n -o gaccelerate5 -e test -v default -t /Users/joed/.sso-cli/valid_token.dat  -k <edgemicro key> -s <edgemicro secret> -c "/Users/rajeshmi/.edgemicro/gaccelerate5-test-config.yaml" -n default
+./install/kubernetes/webhook-edgemicro-patch.sh -i n -o gaccelerate5 -e test -v default -t /Users/rajeshmi/.sso-cli/valid_token.dat  -k <edgemicro key> -s <edgemicro secret> -c "/Users/rajeshmi/.edgemicro/gaccelerate5-test-config.yaml" -n default
 
 ```
 
