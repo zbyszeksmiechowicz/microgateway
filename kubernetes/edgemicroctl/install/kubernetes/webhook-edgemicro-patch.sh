@@ -17,7 +17,7 @@ usage() {
   echo "   -r, --api_base_path        API Base path needed if its Private Cloud"
   echo "   -u, --user                 * Apigee Admin Email"
   echo "   -p, --password             * Apigee Admin Password"
-  echo "   -t, --token                * OAuth token to use with management API"
+  echo "   -t, --token                * OAuth token File for Token based Authenticaction of Management API "
   echo "   -n, --namespace            Namespace where your application is deployed. Default is default"
   echo "   -k, --key                  * Edgemicro Key. If not specified it will generate."
   echo "   -s, --secret               * Edgemicro Secret. If not specified it will generate."
