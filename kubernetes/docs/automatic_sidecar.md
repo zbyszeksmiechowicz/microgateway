@@ -111,7 +111,7 @@ For ex:
 
 ```
 
-if you use OAuth2 to access Management API, get a OAuth2 Apigee token. Please refer here [https://docs.apigee.com/api-platform/system-administration/using-oauth2] to obtain a oauth2 token. You can use acurl or get_token to obtain a token that silently stores the token in 
+if you use OAuth2 to access Management API, get a OAuth2 Apigee token. Please refer [here](https://docs.apigee.com/api-platform/system-administration/using-oauth2) to obtain a oauth2 token. You can use acurl or get_token to obtain a token that silently stores the token in 
 "~/.sso-cli folder".
 You can pass the -t parameter with the absolute path of the token file. 
 For ex:
