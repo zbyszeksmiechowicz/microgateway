@@ -431,9 +431,8 @@ helloworld-6987878fc4-gz74k   2/2       Running   0          2d
 
 ### Configuration Change 
 
-There can be cases when you need to modify your configuration files. For example you want to add a new policy sequence to your service or you change some existing parameters.
+There can be cases when you need to modify edgemicro configuration. Edgemicro gets its configuration from org-env-config.yaml file. When deploying edgemicro as a Service or as manual sidecar you pass a -conf parameter to edgemicroctl command. Edgemicro pod picks up this configuration from kubernetes secret object mgwsecret. This org-env config file tells edgemicro which policies to execute. What if you want to add a new policy to a running edgemicro? You don't have to wipe out the existing setup. You can follow the steps below to change the configuration.
 
-Edgemicro Configurations are stored as a kuberentes secret object  called mgwsecret. 
 
 - Create a secret configuration file secret.yaml as shown below :
 
@@ -453,7 +452,7 @@ data:
 ---
 ```
 
-- specify the base64 encoded value of EDGEMICRO_ORG,EDGEMICRO_ENV,EDGEMICRO_KEY,EDGEMICRO_SECRET
+- Create base64 encoded value for mgorg,mgenv, mgkey,mgsecret, mgconfig and replace EDGEMICRO_ORG,EDGEMICRO_ENV,EDGEMICRO_KEY,EDGEMICRO_SECRET in secret.yaml file.
 
 ```
 echo -n "your-org" | base64 | tr -d '\n'
@@ -463,7 +462,8 @@ echo -n "your-mg-secret" | base64 | tr -d '\n'
 
 ```
 
-- Once you have made desired changes to your config, Base64 Encode twice the contents of  config file. 
+- Update oue org-env-config.yaml with desired changes. If you are adding policy update the sequence section and add the new policy.
+- Base64 Encode twice the contents of  config file. Update value of mgconfig in the secret.yaml file.
 ```
 cat ~/.edgemicro/org-env-config.yaml | base64 | tr -d '\n' | base64  | tr -d '\n'
 ```
@@ -471,9 +471,30 @@ cat ~/.edgemicro/org-env-config.yaml | base64 | tr -d '\n' | base64  | tr -d '\n
 - Apply changes to kubernetes on the namespace where your service is running.
 ```
 kubectl apply -f secret.yaml -n <your name space>
+for ex in default namespace:
+kubectl apply -f secret.yaml -n default
+
+
 ```
 
-- These new changes are still not picked up by existing microgateway pods. However the new pods will get the changes. You can delete the existing pod so that deployment creates a new pod that picks up the change 
+- These new changes will still be not picked up by existing microgateway pods. However the new pods will get the changes. You can delete the existing pod so that deployment creates a new pod. 
+
+ex: for service:
+
+```
+kubectl get pods
+NAME                                 READY     STATUS    RESTARTS   AGE
+edge-microgateway-57ccc7776b-g7nrg   1/1       Running   0          19h
+helloworld-6987878fc4-cltc2          1/1       Running   0          1d
+
+kubectl delete pod edge-microgateway-57ccc7776b-g7nrg
+pod "edge-microgateway-57ccc7776b-g7nrg" deleted
+
+kubectl get pods
+NAME                                 READY     STATUS    RESTARTS   AGE
+edge-microgateway-57ccc7776b-7f6tc   1/1       Running   0          5s
+helloworld-6987878fc4-cltc2          1/1       Running   0          1d
+```
 
 ex: for sidecar:
 
@@ -490,6 +511,8 @@ NAME                          READY     STATUS        RESTARTS   AGE
 helloworld-7d5f5b6769-cr4z5   2/2       Running       0          5s
 helloworld-7d5f5b6769-vcq6m   0/2       Terminating   0          32m
 ```
+
+
 
 ### Multiple Edgemicro configuration
 
