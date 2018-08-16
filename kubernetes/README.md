@@ -359,26 +359,28 @@ kubectl apply -f  install/kubernetes/edgemicro-sidecar-injector-configmap-releas
 
 If you have deployed edgemicro as sidecar, by default it comes with 1 replica. You can use kubernetes scaling principles to scale your deployments
 
-- **Edgemicro as Service**
+1. **Edgemicro as Service**
+
+- Check the current deployment State
 ```
 kubectl get deployments
 NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 edge-microgateway   1         1         1            1           18h
 helloworld          1         1         1            1           1d
-
 ```
-Scale the deployment from 1 to as many replicas you desire
+
+- Scale the deployment from 1 to as many replicas you desire
 ```
 kubectl scale deployment edge-microgateway --replicas=2
 ```
 
-In case you want to set for autoscaling, you can use following command 
+- In case you want to set for autoscaling, you can use following command 
 
 ```
 kubectl autoscale deployment edge-microgateway --cpu-percent=50 --min=1 --max=10
 ```
 
-Check deployment and pods
+- Check deployment and pods after Scaling
 ```
 NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 edge-microgateway   2         2         2            2           18h
@@ -392,39 +394,34 @@ helloworld-6987878fc4-cltc2          1/1       Running   0          1d
 
 ```
 
-- **Edgemicro as Sidecar**
+2. **Edgemicro as Sidecar**
 
+- Check the Current deployment and Pod state
 ```
 kubectl get deployments
 NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 helloworld   1         1         1            1           2d
-```
-Check Pods
-```
+
 kubectl get pods
 NAME                          READY     STATUS    RESTARTS   AGE
 helloworld-6987878fc4-gz74k   2/2       Running   0          2d
 ```
-Scale the deployment from 1 to as many replicas you desire. In this case you scale the actual service.
+- Scale the deployment from 1 to as many replicas you desire. In this case you scale the actual service.
 ```
 kubectl scale deployment helloworld --replicas=2
 ```
-In case you want to set for autoscaling, you can use following command 
+- In case you want to set for autoscaling, you can use following command 
 
 ```
 kubectl autoscale deployment helloworld --cpu-percent=50 --min=1 --max=10
 ```
 
-
-Check Deployments
+- Check deployment and Pod state after Scaling
 ```
 kubectl get deployments
 NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 helloworld   2         2         2            2           2d
-```
 
-Check Pods 
-```
 kubectl get pods
 NAME                          READY     STATUS    RESTARTS   AGE
 helloworld-6987878fc4-ftw78   2/2       Running   0          32s
