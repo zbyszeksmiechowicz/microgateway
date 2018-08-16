@@ -359,7 +359,7 @@ kubectl apply -f  install/kubernetes/edgemicro-sidecar-injector-configmap-releas
 
 If you have deployed edgemicro as sidecar, by default it comes with 1 replica. You can use kubernetes scaling principles to scale your deployments
 
-- Edgemicro as Service
+- **Edgemicro as Service**
 ```
 kubectl get deployments
 NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
@@ -392,7 +392,7 @@ helloworld-6987878fc4-cltc2          1/1       Running   0          1d
 
 ```
 
-- Edgemicro as Sidecar
+- **Edgemicro as Sidecar**
 
 ```
 kubectl get deployments
