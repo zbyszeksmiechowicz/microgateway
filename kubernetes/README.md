@@ -359,36 +359,78 @@ kubectl apply -f  install/kubernetes/edgemicro-sidecar-injector-configmap-releas
 
 If you have deployed edgemicro as sidecar, by default it comes with 1 replica. You can use kubernetes scaling principles to scale your deployments
 
+- Edgemicro as Service
 ```
 kubectl get deployments
-
-NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-helloworld   1         1         1            1           3m
-
-```
-- Edit deployment and change the replica from 1 to 2
-```
-kubectl edit deployment helloworld
-
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: helloworld
+NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+edge-microgateway   1         1         1            1           18h
+helloworld          1         1         1            1           1d
 
 ```
-- Check deployment and pods
+Scale the deployment from 1 to as many replicas you desire
 ```
-kubectl get deployments
-NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-helloworld   2         2         2            1           5m
+kubectl scale deployment edge-microgateway --replicas=2
+```
+
+In case you want to set for autoscaling, you can use following command 
+
+```
+kubectl autoscale deployment edge-microgateway --cpu-percent=50 --min=1 --max=10
+```
+
+Check deployment and pods
+```
+NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+edge-microgateway   2         2         2            2           18h
+helloworld          1         1         1            1           1d
 
 kubectl get pods
-NAME                          READY     STATUS    RESTARTS   AGE
-helloworld-7d5f5b6769-nm7zd   2/2       Running   0          30s
-helloworld-7d5f5b6769-vcq6m   2/2       Running   0          6m
+NAME                                 READY     STATUS    RESTARTS   AGE
+edge-microgateway-57ccc7776b-g7nrg   1/1       Running   0          18h
+edge-microgateway-57ccc7776b-rvfz4   1/1       Running   0          41s
+helloworld-6987878fc4-cltc2          1/1       Running   0          1d
 
 ```
+
+- Edgemicro as Sidecar
+
+```
+kubectl get deployments
+NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+helloworld   1         1         1            1           2d
+```
+Check Pods
+```
+kubectl get pods
+NAME                          READY     STATUS    RESTARTS   AGE
+helloworld-6987878fc4-gz74k   2/2       Running   0          2d
+```
+Scale the deployment from 1 to as many replicas you desire. In this case you scale the actual service.
+```
+kubectl scale deployment helloworld --replicas=2
+```
+In case you want to set for autoscaling, you can use following command 
+
+```
+kubectl autoscale deployment helloworld --cpu-percent=50 --min=1 --max=10
+```
+
+
+Check Deployments
+```
+kubectl get deployments
+NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+helloworld   2         2         2            2           2d
+```
+
+Check Pods 
+```
+kubectl get pods
+NAME                          READY     STATUS    RESTARTS   AGE
+helloworld-6987878fc4-ftw78   2/2       Running   0          32s
+helloworld-6987878fc4-gz74k   2/2       Running   0          2d
+```
+
 
 ### Configuration Change 
 
