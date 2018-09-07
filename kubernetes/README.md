@@ -123,7 +123,7 @@ system:
 
 - Use edgemicroctl to deploy edgemicro in a kubernetes cluster. It uses the key and secret generated  above .
 ```
-kubectl apply -f <(edgemicroctl -org=<org> -env=<env> -key=<edgemicro-key> -sec=<edgemicro-secret> -conf=<file path of org-env-config.yaml> -img=gcr.io/apigee-microgateway/edgemicro:2.5.16)
+kubectl apply -f <(edgemicroctl -org=<org> -env=<env> -key=<edgemicro-key> -sec=<edgemicro-secret> -conf=<file path of org-env-config.yaml>)
 ```
 
 - Setup nginx ingress controller for edgemicro
@@ -150,7 +150,7 @@ EOF
 
 - Deploy your service without any ingress controller.
 ```
-kubectl apply -f samples/helloworld/hellworld-service.yaml
+kubectl apply -f samples/helloworld/helloworld-service.yaml
 ```
 
 #### Verification Steps 
@@ -173,6 +173,7 @@ kubectl get ing -o wide
 NAME                HOSTS     ADDRESS         PORTS     AGE
 edge-microgateway   *         35.225.100.55   80        5h
 ```
+
 - Get Ingress IP
 
 ```
@@ -180,8 +181,6 @@ export GATEWAY_IP=$(kubectl describe ing edge-microgateway --namespace default |
 
 echo $GATEWAY_IP
 
-echo "Call with no API Key:"
-curl $GATEWAY_IP:80/hello;
 ```
 
 - Get ClusterIP for helloworld service
@@ -196,14 +195,27 @@ NAME         TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
 helloworld   NodePort   10.55.254.255   <none>        8081:30329/TCP   3m
 ```
 
-- Record the clusterIP to generate the edgemicro api proxy in Edge. For ex - target IP in this case would be http://10.55.254.255:8081. Follow instructions [here](https://docs.apigee.com/api-platform/microgateway/2.5.x/setting-and-configuring-edge-microgateway#part2createentitiesonapigeeedge) to finish apigee setup.
+- Record the clusterIP to generate the edgemicro api proxy in Edge. For ex - target IP in this case would be http://10.55.254.255:8081 (Cluster IP of helloworld service as above). 
+Follow instructions [here](https://docs.apigee.com/api-platform/microgateway/2.5.x/setting-and-configuring-edge-microgateway#part2createentitiesonapigeeedge) to finish apigee setup.
+
 
 - Call API 
+You may have to wait for upto 10 mins(default refresh time) to get changes synched from edge.
+
 ```
 echo "Call with API Key:"
-curl - 'x-api-key:your-edge-api-key' $GATEWAY_IP:80/hello/echo;echo
+curl  'x-api-key:your-edge-api-key' $GATEWAY_IP:80/hello;echo
 ```
 
+### Cleanup Service Deployment
+
+```
+kubectl delete ing edge-microgateway
+kubectl delete -f samples/helloworld/helloworld-service.yaml
+kubectl delete -f <(edgemicroctl -org=<org> -env=<env> -key=<edgemicro-key> -sec=<edgemicro-secret> -conf=<file path of org-env-config.yaml>)
+
+
+```
 
 ## Edgemicro as Sidecar
 
@@ -347,42 +359,80 @@ kubectl apply -f  install/kubernetes/edgemicro-sidecar-injector-configmap-releas
 
 If you have deployed edgemicro as sidecar, by default it comes with 1 replica. You can use kubernetes scaling principles to scale your deployments
 
+1. **Edgemicro as Service**
+
+- Check the current deployment State
 ```
 kubectl get deployments
+NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+edge-microgateway   1         1         1            1           18h
+helloworld          1         1         1            1           1d
+```
 
-NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-helloworld   1         1         1            1           3m
+- Scale the deployment from 1 to as many replicas you desire
+```
+kubectl scale deployment edge-microgateway --replicas=2
+```
+
+- In case you want to set for autoscaling, you can use following command 
 
 ```
-- Edit deployment and change the replica from 1 to 2
+kubectl autoscale deployment edge-microgateway --cpu-percent=50 --min=1 --max=10
 ```
-kubectl edit deployment helloworld
 
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: helloworld
+- Check deployment and pods after Scaling
+```
+NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+edge-microgateway   2         2         2            2           18h
+helloworld          1         1         1            1           1d
+
+kubectl get pods
+NAME                                 READY     STATUS    RESTARTS   AGE
+edge-microgateway-57ccc7776b-g7nrg   1/1       Running   0          18h
+edge-microgateway-57ccc7776b-rvfz4   1/1       Running   0          41s
+helloworld-6987878fc4-cltc2          1/1       Running   0          1d
 
 ```
-- Check deployment and pods
+
+2. **Edgemicro as Sidecar**
+
+- Check the Current deployment and Pod state
 ```
 kubectl get deployments
 NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-helloworld   2         2         2            1           5m
+helloworld   1         1         1            1           2d
 
 kubectl get pods
 NAME                          READY     STATUS    RESTARTS   AGE
-helloworld-7d5f5b6769-nm7zd   2/2       Running   0          30s
-helloworld-7d5f5b6769-vcq6m   2/2       Running   0          6m
+helloworld-6987878fc4-gz74k   2/2       Running   0          2d
+```
+- Scale the deployment from 1 to as many replicas you desire. In this case you scale the actual service.
+```
+kubectl scale deployment helloworld --replicas=2
+```
+- In case you want to set for autoscaling, you can use following command 
 
 ```
+kubectl autoscale deployment helloworld --cpu-percent=50 --min=1 --max=10
+```
+
+- Check deployment and Pod state after Scaling
+```
+kubectl get deployments
+NAME         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+helloworld   2         2         2            2           2d
+
+kubectl get pods
+NAME                          READY     STATUS    RESTARTS   AGE
+helloworld-6987878fc4-ftw78   2/2       Running   0          32s
+helloworld-6987878fc4-gz74k   2/2       Running   0          2d
+```
+
 
 ### Configuration Change 
 
-There can be cases when you need to modify your configuration files. For example you want to add a new policy sequence to your service or you change some existing parameters.
+There can be cases when you need to modify edgemicro configuration. Edgemicro gets its configuration from org-env-config.yaml file. When deploying edgemicro as a Service or as manual sidecar you pass a -conf parameter to edgemicroctl command. Edgemicro pod picks up this configuration from kubernetes secret object mgwsecret. This org-env config file tells edgemicro which policies to execute. What if you want to add a new policy to a running edgemicro? You don't have to wipe out the existing setup. You can follow the steps below to change the configuration.
 
-Edgemicro Configurations are stored as a kuberentes secret object  called mgwsecret. 
 
 - Create a secret configuration file secret.yaml as shown below :
 
@@ -402,7 +452,7 @@ data:
 ---
 ```
 
-- specify the base64 encoded value of EDGEMICRO_ORG,EDGEMICRO_ENV,EDGEMICRO_KEY,EDGEMICRO_SECRET
+- Create base64 encoded value for mgorg,mgenv, mgkey,mgsecret, mgconfig and replace EDGEMICRO_ORG,EDGEMICRO_ENV,EDGEMICRO_KEY,EDGEMICRO_SECRET in secret.yaml file.
 
 ```
 echo -n "your-org" | base64 | tr -d '\n'
@@ -412,7 +462,8 @@ echo -n "your-mg-secret" | base64 | tr -d '\n'
 
 ```
 
-- Once you have made desired changes to your config, Base64 Encode twice the contents of  config file. 
+- Update oue org-env-config.yaml with desired changes. If you are adding policy update the sequence section and add the new policy.
+- Base64 Encode twice the contents of  config file. Update value of mgconfig in the secret.yaml file.
 ```
 cat ~/.edgemicro/org-env-config.yaml | base64 | tr -d '\n' | base64  | tr -d '\n'
 ```
@@ -420,9 +471,30 @@ cat ~/.edgemicro/org-env-config.yaml | base64 | tr -d '\n' | base64  | tr -d '\n
 - Apply changes to kubernetes on the namespace where your service is running.
 ```
 kubectl apply -f secret.yaml -n <your name space>
+for ex in default namespace:
+kubectl apply -f secret.yaml -n default
+
+
 ```
 
-- These new changes are still not picked up by existing microgateway pods. However the new pods will get the changes. You can delete the existing pod so that deployment creates a new pod that picks up the change 
+- These new changes will still be not picked up by existing microgateway pods. However the new pods will get the changes. You can delete the existing pod so that deployment creates a new pod. 
+
+ex: for service:
+
+```
+kubectl get pods
+NAME                                 READY     STATUS    RESTARTS   AGE
+edge-microgateway-57ccc7776b-g7nrg   1/1       Running   0          19h
+helloworld-6987878fc4-cltc2          1/1       Running   0          1d
+
+kubectl delete pod edge-microgateway-57ccc7776b-g7nrg
+pod "edge-microgateway-57ccc7776b-g7nrg" deleted
+
+kubectl get pods
+NAME                                 READY     STATUS    RESTARTS   AGE
+edge-microgateway-57ccc7776b-7f6tc   1/1       Running   0          5s
+helloworld-6987878fc4-cltc2          1/1       Running   0          1d
+```
 
 ex: for sidecar:
 
@@ -439,6 +511,8 @@ NAME                          READY     STATUS        RESTARTS   AGE
 helloworld-7d5f5b6769-cr4z5   2/2       Running       0          5s
 helloworld-7d5f5b6769-vcq6m   0/2       Terminating   0          32m
 ```
+
+
 
 ### Multiple Edgemicro configuration
 
