@@ -44,6 +44,8 @@ const setup = function setup() {
         .option('-d, --debug', 'execute with debug output')
         .option('-c, --configDir <configDir>', 'Set the directory where configs are written.')
         .option('-x, --proxyName <proxyName>', 'Set the custom proxy name for edgemicro-auth')
+        .option('-k  --key <key>', 'Path to private key to be used by Apigee Edge')
+        .option('-s  --cert <cert>', 'Path to certificate to be used by Apigee Edge')
         .action((options) => {
             options.error = optionError;
             options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
@@ -69,6 +71,11 @@ const setup = function setup() {
                 }
                 if (!options.env) {
                     return options.error('env is required');
+                }
+                if (options.key || options.cert) {
+                    if (!options.key || !options.cert) {
+                        return options.error('key and cert must be passed together');
+                    }
                 }
                 options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
                 promptForPassword(options, (options) => {
