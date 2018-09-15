@@ -43,7 +43,8 @@ Gateway.prototype.start = (options) => {
         key: options.key,
         secret: options.secret
     };
-    const args = {
+
+    var args = {
         target: cache,
         keys: keys,
         pluginDir: options.pluginDir
@@ -88,6 +89,12 @@ Gateway.prototype.start = (options) => {
         var logger = gateway.Logging.init(config);
         var opt = {};
         delete args.keys;
+        //set pluginDir
+        if (!args.pluginDir) {
+            if (config.edgemicro.plugins.dir) {
+                args.pluginDir = path.resolve(config.edgemicro.plugins.dir);
+            }
+        }
         opt.args = [JSON.stringify(args)];
         opt.timeout = 10;
         opt.logger = gateway.Logging.getLogger();
