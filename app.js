@@ -1,17 +1,4 @@
 'use strict';
-if (process.env.EDGEMICRO_STACKDRIVER) {
-  if (!process.env.GCP_PROJECT_ID || !process.env.GCP_KEY_FILE) {
-    console.log("env GCP_PROJECT_ID or GCP_KEY_FILE is missing, skipping trace");
-  } else {
-    var stackdriverConfig = require('./stackdriver-config.json');
-    var stackdriverConfig = Object.assign({
-      projectId: process.env.GCP_PROJECT_ID,
-      keyFilename: process.env.GCP_KEY_FILE
-    },stackdriverConfig);
-    console.log(stackdriverConfig);
-    require('@google-cloud/trace-agent').start(stackdriverConfig);
-  }
-}
 
 var request = require('request');
 var url = require('url');
