@@ -149,6 +149,9 @@ function setEdgeMicroInternalEndpoint(file, runtimeUrl) {
   const endpoint = "https://edgemicroservices.apigee.net";
   var content = fs.readFileSync(file, 'utf-8');
   content = content.replace(endpoint, runtimeUrl);
+  fs.unlinkSync(file);
+  debug('editing authentication url');
+  fs.writeFileSync(file, content, 'utf8');  
 }
 
 function editVirtualHosts(file, virtualhosts) {
