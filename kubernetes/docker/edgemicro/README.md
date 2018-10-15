@@ -8,7 +8,7 @@ The following steps will allow you to run Microgateway as a Docker container.
 
 ### Step 1: Download Microgateway container for docker
 ```
-docker pull gcr.io/apigee-microgateway/edgemicro:2.5.19
+docker pull gcr.io/apigee-microgateway/edgemicro:latest
 ```
 Use a tag to download a specific version
 
@@ -21,7 +21,7 @@ NOTE: This version of docker accepts a microgateway configuration as a base64 en
 
 ### Step 3: Start Microgateway with params
 ```
-docker run -P -p 8000:8000 -d --name edgemicro -e EDGEMICRO_DOCKER=1 -e EDGEMICRO_ORG=org -e EDGEMICRO_ENV=test -e EDGEMICRO_KEY=xxx -e EDGEMICRO_SECRET=xxx -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG -e SERVICE_NAME=edgemicro gcr.io/apigee-microgateway/edgemicro:2.5.19
+docker run -P -p 8000:8000 -d --name edgemicro -e EDGEMICRO_SH=1 -e EDGEMICRO_PROCESS=1 -e EDGEMICRO_DOCKER=1 -e EDGEMICRO_ORG=org -e EDGEMICRO_ENV=test -e EDGEMICRO_KEY=xxx -e EDGEMICRO_SECRET=xxx -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG -e SERVICE_NAME=edgemicro gcr.io/apigee-microgateway/edgemicro:latest
 ```
 
 P = publish all exposed ports to the host
@@ -31,6 +31,8 @@ expose port 8443 if you are expose node.js over TLS
 List of environment variables
 * `EDGEMICRO_ORG` = Apigee Edge org name
 * `EDGEMICRO_ENV` = Apigee Edge environment name
+* `EDGEMICRO_PROCESS` = Number of worker processes to start
+* `EDGEMICRO_SH` = set to 1; this is set when the docker image does not have bash
 * `EDGEMICRO_DOCKER` = set to 1; do not set this when running in Kubernetes
 * `EDGEMICRO_KEY` = Microgateway key 
 * `EDGEMICRO_SECRET` = Microgateway secret
