@@ -8,6 +8,7 @@
     "edgemicro": "./cli/edgemicro"
   },
   "dependencies": {
+    "@google-cloud/trace-agent": "^3.1.1",
     "apigeetool": "^0.7.0",
     "async": "^1.5.2",
     "body-parser": "^1.12.4",
