@@ -21,11 +21,12 @@ NOTE: This version of docker accepts a microgateway configuration as a base64 en
 
 ### Step 3: Start Microgateway with params
 ```
-docker run -P -p 8000:8000 -d --name edgemicro -e EDGEMICRO_SH=1 -e EDGEMICRO_PROCESS=1 -e EDGEMICRO_DOCKER=1 -e EDGEMICRO_ORG=org -e EDGEMICRO_ENV=test -e EDGEMICRO_KEY=xxx -e EDGEMICRO_SECRET=xxx -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG -e SERVICE_NAME=edgemicro gcr.io/apigee-microgateway/edgemicro:latest
+docker run -P -p 8000:8000 -d --name edgemicro -v /hostdir:/opt/apigee/logs -e EDGEMICRO_SH=1 -e EDGEMICRO_PROCESS=1 -e EDGEMICRO_DOCKER=1 -e EDGEMICRO_ORG=org -e EDGEMICRO_ENV=test -e EDGEMICRO_KEY=xxx -e EDGEMICRO_SECRET=xxx -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG -e SERVICE_NAME=edgemicro gcr.io/apigee-microgateway/edgemicro:latest
 ```
 
 P = publish all exposed ports to the host
 d = run in detached mode
+v = volume mount for logs
 expose port 8443 if you are expose node.js over TLS
 
 List of environment variables
