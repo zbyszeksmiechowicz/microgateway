@@ -7,12 +7,8 @@ exec 2>&1
 
 echo "Log Location should be: [ $LOG_LOCATION ]"
 
-SERVICE_NAME=`echo "${SERVICE_NAME}" | tr '[a-z]' '[A-Z]'`
-SERVICE_PORT_NAME=${SERVICE_NAME}_SERVICE_PORT
-SERVICE_PORT=${!SERVICE_PORT_NAME}
-proxy_name=edgemicro_$POD_NAME
-product_name=$proxy_name-product
 
+SERVICE_NAME=$(env | grep POD_NAME=| cut -d '=' -f2| cut -d '-' -f1 | tr '[a-z]' '[A-Z]')
 
 if [[ ${EDGEMICRO_CONFIG} != "" ]]; then
 	echo ${EDGEMICRO_CONFIG} >> /tmp/test.txt
