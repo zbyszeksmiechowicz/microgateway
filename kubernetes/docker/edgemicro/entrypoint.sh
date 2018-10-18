@@ -22,10 +22,17 @@ fi
 proxy_name=edgemicro_${SERVICE_NAME}
 target_port=$SERVICE_PORT
 base_path=/
+processes=""
+background=" &"
+mgstart=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -d /opt/apigee/plugins "
+localproxy=" export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY "
+mgdir="cd /opt/apigee "
+decorator=" export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR "
+debug=" export DEBUG=$DEBUG "
 
 if [[ ${EDGEMICRO_CONFIG} != "" ]]; then
 	#echo ${EDGEMICRO_CONFIG} >> /tmp/test.txt
-	echo ${EDGEMICRO_CONFIG} | base64 --decode > /opt/apigee/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
+	echo ${EDGEMICRO_CONFIG} | base64 -d > /opt/apigee/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
 
   chown apigee:apigee /opt/apigee/.edgemicro/*
 fi
@@ -37,29 +44,41 @@ if [[ -n "$EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval" ]]; then
   sed -i.back "s/config_change_poll_interval.*/config_change_poll_interval: $EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval/g" /opt/apigee/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
 fi
 
+if [[ ${EDGEMICRO_PROCESSES} != "" ]]; then
+	mgstart=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -p $EDGEMICRO_PROCESSES -d /opt/apigee/plugins "
+fi
+
 if [[ ${EDGEMICRO_LOCAL_PROXY} != "1" ]]; then
-  commandString="cd /opt/apigee && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET  -d /opt/apigee/plugins &"
+  commandString="$mgdir && $mgstart $background"
 else
-  commandString="cd /opt/apigee && export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR &&  export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY && edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -d /opt/apigee/plugins -a $proxy_name -v 1 -b / -t http://localhost:$target_port  &"
+  commandString="$mgdir && $decorator &&  $localproxy && $mgstart -a $proxy_name -v 1 -b / -t http://localhost:$target_port  $background"
 fi
 
 if [[ ${EDGEMICRO_DOCKER} != "" ]]; then
-	su - apigee -c "$commandString"
-else 
-	su - apigee -m -c "$commandString"
+  if [[ ${DEBUG} != "" ]]; then
+    su - apigee -s /bin/sh -c "$debug && $commandString"
+  else
+    su - apigee -s /bin/sh -c "$commandString"
+  fi
+else
+  if [[ ${DEBUG} != "" ]]; then
+    su - apigee -s /bin/sh -m -c "$debug && $commandString"
+  else 
+    su - apigee -s /bin/sh -m -c "$commandString"
+  fi
 fi 
 #edgemicro start &
 
 # SIGUSR1-handler
 my_handler() {
   echo "my_handler" >> /tmp/entrypoint.log
-  su - apigee -m -c "cd /opt/apigee && edgemicro stop"
+  su - apigee -m -s /bin/sh -c "cd /opt/apigee && edgemicro stop"
 }
 
 # SIGTERM-handler
 term_handler() {
   echo "term_handler" >> /tmp/entrypoint.log
-  su - apigee -m -c "cd /opt/apigee && edgemicro stop"
+  su - apigee -m -s /bin/sh -c "cd /opt/apigee && edgemicro stop"
   exit 143; # 128 + 15 -- SIGTERM
 }
 
@@ -72,3 +91,4 @@ while true
 do
         tail -f /dev/null & wait ${!}
 done
+
