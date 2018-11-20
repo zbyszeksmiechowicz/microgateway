@@ -1,39 +1,54 @@
-#!/bin/bash
+#!/bin/sh
 
 # Log Location on Server.
 LOG_LOCATION=/opt/apigee/logs
-exec > >(tee -i $LOG_LOCATION/edgemicro.log)
-exec 2>&1
+#exec > >(tee -i $LOG_LOCATION/edgemicro.log)
+exec 2>&1 | tee -a $LOG_LOCATION/edgemicro.log
+echo "Log Location: [ $LOG_LOCATION ]"
 
-echo "Log Location should be: [ $LOG_LOCATION ]"
-
-
-SERVICE_NAME=$(env | grep POD_NAME=| cut -d '=' -f2| cut -d '-' -f1 | tr '[a-z]' '[A-Z]')
-
-if [[ ${CONTAINER_PORT} != "" ]]; then
-    SERVICE_PORT=${CONTAINER_PORT}
-else
-  ## We should create a Service name label if the deployment name is not same as service name
-  ## In most of the cases it will work. The workaround is to add a containerPort label
-  
-  SERVICE_PORT=$(env | grep ${SERVICE_NAME}_SERVICE_PORT_HTTP=| cut -d '=' -f 2)
+if [[ $SERVICE_NAME == "" ]]
+  then
+  SERVICE_NAME=$(env | grep POD_NAME=| cut -d '=' -f2| cut -d '-' -f1 | tr '[a-z]' '[A-Z]')
 fi
 
-proxy_name=edgemicro_${SERVICE_NAME}
-target_port=$SERVICE_PORT
-base_path=/
-processes=""
-background=" &"
-mgstart=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -d /opt/apigee/plugins "
-localproxy=" export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY "
-mgdir="cd /opt/apigee "
-decorator=" export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR "
-debug=" export DEBUG=$DEBUG "
+if [[ -n "$CONTAINER_PORT"  ]]
+    then
+    SERVICE_PORT=$CONTAINER_PORT
+elif [[ -n "$SERVICE_NAME_SERVICE_PORT_HTTP"  ]]
+  then
+  ## We should create a Service name label if the deployment name is not same as service name
+  ## In most of the cases it will work. The workaround is to add a containerPort label
+  SERVICE_PORT=$(env | grep $SERVICE_NAME_SERVICE_PORT_HTTP=| cut -d '=' -f 2)
+fi
 
-if [[ ${EDGEMICRO_CONFIG} != "" ]]; then
-	#echo ${EDGEMICRO_CONFIG} >> /tmp/test.txt
-	echo ${EDGEMICRO_CONFIG} | base64 -d > /opt/apigee/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
+if [[ -n "$EDGEMICRO_API_BASEPATH" ]]
+  then
+  BASE_PATH=$EDGEMICRO_API_BASEPATH
+else
+  BASE_PATH="/"
+fi
 
+if [[ -n "$EDGEMICRO_API_REVISION" ]]
+  then
+  REVISION=$EDGEMICRO_API_REVISION
+else
+  REVISION="1"
+fi
+
+PROXY_NAME=edgemicro_$SERVICE_NAME
+TARGET_PORT=$SERVICE_PORT
+PLUGIN_DIR="/opt/apigee/plugins"
+BACKGROUND=" &"
+MGSTART=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -d $PLUGIN_DIR "
+LOCALPROXY=" export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY "
+MGDIR="cd /opt/apigee "
+DECORATOR=" export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR "
+DEBUG=" export DEBUG=$DEBUG "
+REDIRECT=" 2>&1 | tee -a $LOG_LOCATION/edgemicro.log"
+
+if [[ -n "$EDGEMICRO_CONFIG"  ]]
+  then
+  echo $EDGEMICRO_CONFIG | base64 -d > /opt/apigee/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
   chown apigee:apigee /opt/apigee/.edgemicro/*
 fi
 
@@ -44,41 +59,43 @@ if [[ -n "$EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval" ]]; then
   sed -i.back "s/config_change_poll_interval.*/config_change_poll_interval: $EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval/g" /opt/apigee/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
 fi
 
-if [[ ${EDGEMICRO_PROCESSES} != "" ]]; then
-	mgstart=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -p $EDGEMICRO_PROCESSES -d /opt/apigee/plugins "
+# set the number of microgateway processes
+if [[ -n "$EDGEMICRO_PROCESSES" ]]
+  then
+  MGSTART=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -p $EDGEMICRO_PROCESSES -d $PLUGIN_DIR "
 fi
 
-if [[ ${EDGEMICRO_LOCAL_PROXY} != "1" ]]; then
-  commandString="$mgdir && $mgstart $background"
+# allow for custom CA certs, including self signed certs
+if [[ -n "$NODE_EXTRA_CA_CERTS" ]]
+  then
+  MGSTART=" export NODE_EXTRA_CA_CERTS="$NODE_EXTRA_CA_CERTS " && "$MGSTART
+fi  
+
+if [[ -n "$EDGEMICRO_LOCAL_PROXY" ]]
+  then
+  DECORATOR=" export EDGEMICRO_DECORATOR=1 "
+  CMDSTRING="$MGDIR && $DECORATOR &&  $LOCALPROXY && $MGSTART -a $PROXY_NAME -v $REVISION -b $BASE_PATH -t http://localhost:$TARGET_PORT $REDIRECT $BACKGROUND"
 else
-  commandString="$mgdir && $decorator &&  $localproxy && $mgstart -a $proxy_name -v 1 -b / -t http://localhost:$target_port  $background"
+  CMDSTRING="$MGDIR && $MGSTART $REDIRECT $BACKGROUND"
 fi
 
-if [[ ${EDGEMICRO_DOCKER} != "" ]]; then
-  if [[ ${DEBUG} != "" ]]; then
-    su - apigee -s /bin/sh -c "$debug && $commandString"
-  else
-    su - apigee -s /bin/sh -c "$commandString"
-  fi
+if [[ -n "$DEBUG" ]]
+  then
+  /bin/sh -c "$DEBUG && $CMDSTRING"
 else
-  if [[ ${DEBUG} != "" ]]; then
-    su - apigee -s /bin/sh -m -c "$debug && $commandString"
-  else 
-    su - apigee -s /bin/sh -m -c "$commandString"
-  fi
-fi 
-#edgemicro start &
+  /bin/sh -c "$CMDSTRING"
+fi
 
 # SIGUSR1-handler
 my_handler() {
   echo "my_handler" >> /tmp/entrypoint.log
-  su - apigee -m -s /bin/sh -c "cd /opt/apigee && edgemicro stop"
+  /bin/sh -c "cd /opt/apigee && edgemicro stop"
 }
 
 # SIGTERM-handler
 term_handler() {
   echo "term_handler" >> /tmp/entrypoint.log
-  su - apigee -m -s /bin/sh -c "cd /opt/apigee && edgemicro stop"
+  /bin/sh -c "cd /opt/apigee && edgemicro stop"
   exit 143; # 128 + 15 -- SIGTERM
 }
 
@@ -89,6 +106,5 @@ trap 'kill ${!}; term_handler' SIGTERM
 
 while true
 do
-        tail -f /dev/null & wait ${!}
+  tail -f /dev/null & wait ${!}
 done
-

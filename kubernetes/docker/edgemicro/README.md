@@ -14,14 +14,14 @@ Use a tag to download a specific version
 
 ### Step 2: Base64 encode the microgateway configuration file
 ```
-export EDGEMICRO_CONFIG=`base64 .edgemicro/nycdevjam1-test-config.yaml`
+export EDGEMICRO_CONFIG=`base64 $HOME/.edgemicro/org-test-config.yaml`
 ```
 
 NOTE: This version of docker accepts a microgateway configuration as a base64 encoded string. This allows you to pass the configuration file as an environment variable. When using Kubernetes, the configuration file can be stored in a Kubernetes Secret entity.
 
 ### Step 3: Start Microgateway with params
 ```
-docker run -P -p 8000:8000 -d --name edgemicro -v /hostdir:/opt/apigee/logs -e EDGEMICRO_PROCESS=1 -e EDGEMICRO_DOCKER=1 -e EDGEMICRO_ORG=org -e EDGEMICRO_ENV=test -e EDGEMICRO_KEY=xxx -e EDGEMICRO_SECRET=xxx -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG -e SERVICE_NAME=edgemicro gcr.io/apigee-microgateway/edgemicro:latest
+docker run -P -p 8000:8000 -d --name edgemicro -v /var/tmp:/opt/apigee/logs -e EDGEMICRO_PROCESS=1 -e EDGEMICRO_ORG=org -e EDGEMICRO_ENV=test -e EDGEMICRO_KEY=xxx -e EDGEMICRO_SECRET=xxx -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG -e SERVICE_NAME=edgemicro --security-opt=no-new-privileges --cap-drop=ALL gcr.io/apigee-microgateway/edgemicro:latest
 ```
 
 P = publish all exposed ports to the host
@@ -33,7 +33,6 @@ List of environment variables
 * `EDGEMICRO_ORG` = Apigee Edge org name
 * `EDGEMICRO_ENV` = Apigee Edge environment name
 * `EDGEMICRO_PROCESS` = Number of worker processes to start
-* `EDGEMICRO_DOCKER` = set to 1; do not set this when running in Kubernetes
 * `EDGEMICRO_KEY` = Microgateway key 
 * `EDGEMICRO_SECRET` = Microgateway secret
 * `EDGEMICRO_CONFIG` = A base64 encoded string of the microgateway config file
@@ -47,38 +46,35 @@ docker stop edgemicro
 
 NOTE: You can now restart Microgateway using this command
 ```
-docker start $(docker ps -aqf name=edgemicro)
+docker start edgemicro
 ```
 
-## Enable Custom Plugins
+## TLS certificates
+The container has a mount point on `/opt/apigee/.edgemicro`. You can load the certificates on the mount point and refer to it from the `org-env-config.yaml`
 
-To enable custom plugins to Microgateway, perform the following steps
+## Using custom plugins
+There are two options to deal with custom plugins:
 
-### Step 1: Add plugins to the docker container 
+### Option 1: Mount the plugins
+
+Plugins can be mounted on the volume `/opt/apigee/plugins`
 ```
-FROM gcr.io/apigee-microgateway/edgemicro:2.5.19
+docker run -v /volume/mount:/opt/apigee/plugins .....
+```
+
+### Option 2: Build plugins into the container
+
+Build a new container with the plugins
+
+Here is an example:
+```
+FROM gcr.io/apigee-microgateway/edgemicro:latest
 RUN apt-get install unzip
 COPY plugins.zip /opt/apigee/
 RUN chown apigee:apigee /opt/apigee/plugins.zip
 RUN su - apigee -c "unzip /opt/apigee/plugins.zip -d /opt/apigee"
 EXPOSE 8000
 EXPOSE 8443
+USER apigee
 ENTRYPOINT ["/tmp/entrypoint.sh"]
-```
-NOTE: Use npm install to add any additional dependencies required by the custom plugins
-
-### Step 2: Create a new Microgateway image (with the plugins)
-```
-docker build -t edgemicroplugins .
-```
-
-### Step 3: Set the plugin directory in the configuration file
-
-```
-edgemicro:
-  ...
-  plugins:
-    dir: /opt/apigee/plugins
-    sequence:
-      - oauth
 ```
