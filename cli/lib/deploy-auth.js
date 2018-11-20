@@ -124,7 +124,6 @@ Deployment.prototype.checkDeployedProxies = function checkDeployedProxies(option
     //console.log('checking for previously deployed proxies')
     const opts = {
         organization: options.org,
-        //environment: options.env,
         api: 'edgemicro-auth',
         baseuri: this.managementUri,
         debug: options.debug
