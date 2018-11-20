@@ -124,7 +124,7 @@ Deployment.prototype.checkDeployedProxies = function checkDeployedProxies(option
     //console.log('checking for previously deployed proxies')
     const opts = {
         organization: options.org,
-        environment: options.env,
+        api: 'edgemicro-auth',
         baseuri: this.managementUri,
         debug: options.debug
     };
@@ -137,12 +137,21 @@ Deployment.prototype.checkDeployedProxies = function checkDeployedProxies(option
     }
     const that = this;
     apigeetool.listDeployments(opts, function(err, proxies) {
+        
         if (err) {
-            return cb(err);
+            options.deployed = false;
+            if (err.message.includes("404")) {
+                return cb(null, options);
+            } else {
+                return cb(err, options);    
+            }            
         }
-        _.assign(options, proxies);
-        cb(err, options)
-    })
+        //_.assign(options, proxies);
+        else {
+            options.deployed = true;
+            cb(null, options);
+        }
+    });
 }
 
 function setEdgeMicroInternalEndpoint(file, runtimeUrl) {
