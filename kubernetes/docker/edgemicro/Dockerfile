@@ -20,7 +20,8 @@ RUN chown apigee:apigee /opt/apigee && \
     chown apigee:apigee /opt/apigee/.edgemicro && \
     ln -s /opt/apigee/.edgemicro /root/.edgemicro && \
     su - apigee -s /bin/sh -c "edgemicro init" && \
-    chmod +x /tmp/entrypoint.sh
+    chmod +x /tmp/entrypoint.sh && \
+    chwon apigee:apigee /tmp/entrypoint.sh
 
 VOLUME /opt/apigee/.edgemicro
 VOLUME /opt/apigee/logs
