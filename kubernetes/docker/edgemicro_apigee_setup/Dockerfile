@@ -1,7 +1,7 @@
-FROM ubuntu:xenial
+FROM gliderlabs/alpine:3.4
 
-RUN apt-get update && apt-get install curl -y
-ADD setup.sh /tmp/
+RUN apk add --no-cache curl bash
+COPY setup.sh /tmp
 RUN chmod +x /tmp/setup.sh
 
 ENTRYPOINT ["/tmp/setup.sh"]
