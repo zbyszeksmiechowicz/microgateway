@@ -4,18 +4,21 @@ COPY install.sh /tmp
 
 # create user and group for microgateway
 RUN apk add --no-cache sed grep && \
-    addgroup -S apigee && \
-    adduser -s /bin/sh -S -G apigee apigee -h /opt/apigee
+    addgroup -S apigee -g 101 && \
+    adduser -s /bin/sh -u 100 -S -G apigee apigee -h /opt/apigee
 
 WORKDIR /opt/apigee
 
 # copy entrypoint
 COPY entrypoint.sh /opt/apigee
 
+ENV NODE_ENV production
+
 #install and initialize microgateway
 RUN chmod +x /tmp/install.sh && \
     sh /tmp/install.sh && \
-    rm -f /tmp/install.sh
+    rm -f /tmp/install.sh && \
+    deluser --remove-home node
 
 VOLUME /opt/apigee/.edgemicro
 VOLUME /opt/apigee/logs
