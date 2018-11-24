@@ -1,4 +1,4 @@
-FROM gliderlabs/alpine:3.4
+FROM alpine:latest
 
 RUN apk add --no-cache curl bash iptables && \ 
     rm -rf /var/lib/apt/lists/* 
