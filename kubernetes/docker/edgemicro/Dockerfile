@@ -1,14 +1,16 @@
 FROM node:8-alpine
 
-# copy entrypoint
-COPY entrypoint.sh /tmp
 COPY install.sh /tmp
+
 # create user and group for microgateway
 RUN apk add --no-cache sed grep && \
     addgroup -S apigee && \
     adduser -s /bin/sh -S -G apigee apigee -h /opt/apigee
 
 WORKDIR /opt/apigee
+
+# copy entrypoint
+COPY entrypoint.sh /opt/apigee
 
 #install and initialize microgateway
 RUN chmod +x /tmp/install.sh && \
@@ -27,4 +29,4 @@ VOLUME /opt/apigee/plugins
 EXPOSE 8000
 EXPOSE 8443
 USER apigee
-ENTRYPOINT ["/tmp/entrypoint.sh"]
+ENTRYPOINT ["entrypoint"]
