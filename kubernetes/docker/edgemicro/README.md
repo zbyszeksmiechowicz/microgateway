@@ -76,5 +76,5 @@ RUN su - apigee -c "unzip /opt/apigee/plugins.zip -d /opt/apigee"
 EXPOSE 8000
 EXPOSE 8443
 USER apigee
-ENTRYPOINT ["/tmp/entrypoint.sh"]
+ENTRYPOINT ["entrypoint"]
 ```
