@@ -1,6 +1,7 @@
 #!/bin/sh
 
 APIGEE_ROOT="/opt/apigee"
+EDGEMICRO_PLUGIN_DIRECTORY="/opt/apigee/plugins"
 # Log File on Server.
 LOG_FILE=${APIGEE_ROOT}/logs/edgemicro.log
 echo "Log Location: [ $LOG_FILE ]"
@@ -44,20 +45,24 @@ start_edge_micro() {
     sed -i.back "s/config_change_poll_interval.*/config_change_poll_interval: $EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval/g" ${APIGEE_ROOT}/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
   fi
 
+  if [[ -n $EDGEMICRO_PLUGIN_DIR ]]
+    then
+    EDGEMICRO_PLUGIN_DIRECTORY=$EDGEMICRO_PLUGIN_DIR
+  fi
+
   PROXY_NAME=edgemicro_$SERVICE_NAME
   TARGET_PORT=$SERVICE_PORT
   BASE_PATH=/
   BACKGROUND=" &"
-  MGSTART=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -r $EDGEMICRO_PORT -d ${APIGEE_ROOT}/plugins "
+  MGSTART=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -r $EDGEMICRO_PORT -d $EDGEMICRO_PLUGIN_DIRECTORY"
   LOCALPROXY=" export EDGEMICRO_LOCAL_PROXY=$EDGEMICRO_LOCAL_PROXY "
   MGDIR="cd ${APIGEE_ROOT} "
   DECORATOR=" export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR "
   DEBUG=" export DEBUG=$DEBUG "
 
-
   if [[ -n "$EDGEMICRO_PROCESSES" ]]
     then
-    MGSTART=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -p $EDGEMICRO_PROCESSES -d ${APIGEE_ROOT}/plugins "
+    MGSTART=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -p $EDGEMICRO_PROCESSES  -d $EDGEMICRO_PLUGIN_DIRECTORY"
   fi
 
   if [[ -n "$EDGEMICRO_LOCAL_PROXY" ]]
