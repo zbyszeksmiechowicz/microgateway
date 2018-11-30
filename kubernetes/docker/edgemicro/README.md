@@ -69,12 +69,26 @@ Build a new container with the plugins
 Here is an example:
 ```
 FROM gcr.io/apigee-microgateway/edgemicro:latest
-RUN apt-get install unzip
-COPY plugins.zip /opt/apigee/
-RUN chown apigee:apigee /opt/apigee/plugins.zip
-RUN su - apigee -c "unzip /opt/apigee/plugins.zip -d /opt/apigee"
+USER root
+RUN apk update && \
+    apk upgrade && \
+    apk add zip && \
+    mkdir /opt/apigee/customplugins && \
+    chown apigee:apigee /opt/apigee/customplugins
+COPY plugins.zip /opt/apigee/customplugins
+RUN su - apigee -c "unzip /opt/apigee/customplugins/plugins.zip -d /opt/apigee/customplugins"
 EXPOSE 8000
 EXPOSE 8443
 USER apigee
 ENTRYPOINT ["entrypoint"]
+```
+
+Build the new docker image
+```
+docker build -t edgemicrocustomplugin .
+```
+
+Start the new image
+```
+docker run -P -p 8000:8000 -d --name edgemicrocustomplugin -e EDGEMICRO_PLUGIN_DIR=/opt/apigee/customplugins/plugins -e EDGEMICRO_ORG=$EDGEMICRO_ORG -e EDGEMICRO_ENV=$EDGEMICRO_ENV -e EDGEMICRO_KEY=$EDGEMICRO_KEY -e EDGEMICRO_SECRET=$EDGEMICRO_SECRET -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG -e SERVICE_NAME=edgemicrocustomplugin edgemicrocustomplugin
 ```
