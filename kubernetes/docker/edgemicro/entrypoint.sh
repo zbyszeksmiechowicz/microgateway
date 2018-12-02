@@ -45,7 +45,7 @@ start_edge_micro() {
     sed -i.back "s/config_change_poll_interval.*/config_change_poll_interval: $EDGEMICRO_OVERRIDE_edgemicro_config_change_poll_interval/g" ${APIGEE_ROOT}/.edgemicro/$EDGEMICRO_ORG-$EDGEMICRO_ENV-config.yaml
   fi
 
-  if [[ -n $EDGEMICRO_PLUGIN_DIR ]]
+  if [[ -n "$EDGEMICRO_PLUGIN_DIR" ]]
     then
     EDGEMICRO_PLUGIN_DIRECTORY=$EDGEMICRO_PLUGIN_DIR
   fi
