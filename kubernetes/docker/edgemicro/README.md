@@ -32,12 +32,15 @@ expose port 8443 if you are expose node.js over TLS
 List of environment variables
 * `EDGEMICRO_ORG` = Apigee Edge org name
 * `EDGEMICRO_ENV` = Apigee Edge environment name
-* `EDGEMICRO_PROCESS` = Number of worker processes to start
+* `EDGEMICRO_PROCESSES` = Number of worker processes to start
 * `EDGEMICRO_KEY` = Microgateway key 
 * `EDGEMICRO_SECRET` = Microgateway secret
 * `EDGEMICRO_CONFIG` = A base64 encoded string of the microgateway config file
-* `SERVICE_NAME` = set to "edgemicro" (used in Kubernetes)
+* `SERVICE_NAME` = set to "default" (used in Kubernetes)
 * `DEBUG` = `*` to enable debugging
+* `HTTP_PROXY` = set http proxy ex: http_proxy=http://10.203.0.1:5187/
+* `HTTPS_PROXY` = set https proxy ex: https_proxy=https://10.203.0.1:5187/
+* `NO_PROXY` = skip/bypass proxy ex: "localhost,127.0.0.1,localaddress,.localdomain.com"
 
 ### Step 4: Stop Microgateway
 ```
