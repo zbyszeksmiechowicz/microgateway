@@ -96,19 +96,28 @@ var ReloadCluster = (file, opt) => {
     removeWorkerFromActiveWorkers(worker);
 
     var now = Date.now();
-    var interval = respawnIntervalManager.getIntervalForNextSpawn(now);
 
-    if (opt.log.respawns) {
-      logger.log('[' + worker.process.pid + '] worker (' + worker._rc_wid
-        + ':' + worker.id + ') must be replaced, respawning in', interval);
+    //test if the worker was able to load
+    try {
+      //test if the worker was able to load
+      if (typeof respawnIntervalManager.getIntervalForNextSpawn == 'function') {
+        var interval = respawnIntervalManager.getIntervalForNextSpawn(now);
+  
+        if (opt.log.respawns) {
+          logger.log('[' + worker.process.pid + '] worker (' + worker._rc_wid
+            + ':' + worker.id + ') must be replaced, respawning in', interval);
+        }
+    
+        var respawnerTimer = setTimeout(() => {
+          respawnerTimers.remove(respawnerTimer);
+          fork(worker._rc_wid);
+        }, interval);
+    
+        respawnerTimers.add(respawnerTimer);
+      }
+    } catch (e) {//ignore error
+      console.warn(e);
     }
-
-    var respawnerTimer = setTimeout(() => {
-      respawnerTimers.remove(respawnerTimer);
-      fork(worker._rc_wid);
-    }, interval);
-
-    respawnerTimers.add(respawnerTimer);
 
   }
 
@@ -147,9 +156,13 @@ var ReloadCluster = (file, opt) => {
       // possibly a leftover worker that has no channel
       // estabilished will throw error. Ignore.
       try {
-        worker.send({cmd: 'disconnect'});
-        worker.disconnect();
+        //test if the worker exists
+        if (worker.isConnected()) {
+          worker.send({cmd: 'disconnect'});
+          worker.disconnect();  
+        }
       } catch (e) {
+        console.warn(e);
       }
     } else {
       process.nextTick(forceKillWorker);
