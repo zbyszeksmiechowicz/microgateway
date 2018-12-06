@@ -60,6 +60,7 @@ start_edge_micro() {
   DECORATOR=" export EDGEMICRO_DECORATOR=$EDGEMICRO_DECORATOR "
   DEBUG=" export DEBUG=$DEBUG "
   EDGEMICRO_PROXY=""
+  EDGEMICRO_NODE_OPTS=""
 
   if [[ -n "$HTTPS_PROXY" ]]
     then
@@ -82,6 +83,19 @@ start_edge_micro() {
   if [[ -n "$EDGEMICRO_PROCESSES" ]]
     then
     MGSTART=" edgemicro start -o $EDGEMICRO_ORG -e $EDGEMICRO_ENV -k $EDGEMICRO_KEY -s $EDGEMICRO_SECRET -p $EDGEMICRO_PROCESSES  -d $EDGEMICRO_PLUGIN_DIRECTORY"
+  fi
+
+  if [[ -n "$NODE_EXTRA_CA_CERTS" ]]
+    then
+    EDGEMICRO_NODE_OPTS=" export NODE_EXTRA_CA_CERTS="$NODE_EXTRA_CA_CERTS
+  elif [[ -n "$NODE_TLS_REJECT_UNAUTHORIZED" ]]
+    then
+    EDGEMICRO_NODE_OPTS=" export NODE_TLS_REJECT_UNAUTHORIZED="$NODE_TLS_REJECT_UNAUTHORIZED
+  fi
+
+  if [[ -n "$EDGEMICRO_NODE_OPTS" ]]
+    then
+    MGSTART="$EDGEMICRO_NODE_OPTS && $MGSTART"
   fi
 
   if [[ -n "$EDGEMICRO_PROXY" ]]

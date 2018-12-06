@@ -55,6 +55,15 @@ docker start edgemicro
 ## TLS certificates
 The container has a mount point on `/opt/apigee/.edgemicro`. You can load the certificates on the mount point and refer to it from the `org-env-config.yaml`
 
+### Self signed certificates
+If you are using CA not trusted by default by node.js, consider using
+`NODE_EXTRA_CA_CERTS` = A file path to the file that should consist of one or more trusted certificates in PEM format
+
+Whlie we recommend this flag never be used, you could also set
+`NODE_TLS_REJECT_UNAUTHORIZED` = 1
+
+to turn off validation
+
 ## Using custom plugins
 There are two options to deal with custom plugins:
 
