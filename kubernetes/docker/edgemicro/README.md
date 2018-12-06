@@ -32,12 +32,15 @@ expose port 8443 if you are expose node.js over TLS
 List of environment variables
 * `EDGEMICRO_ORG` = Apigee Edge org name
 * `EDGEMICRO_ENV` = Apigee Edge environment name
-* `EDGEMICRO_PROCESS` = Number of worker processes to start
+* `EDGEMICRO_PROCESSES` = Number of worker processes to start
 * `EDGEMICRO_KEY` = Microgateway key 
 * `EDGEMICRO_SECRET` = Microgateway secret
 * `EDGEMICRO_CONFIG` = A base64 encoded string of the microgateway config file
-* `SERVICE_NAME` = set to "edgemicro" (used in Kubernetes)
+* `SERVICE_NAME` = set to "default" (used in Kubernetes)
 * `DEBUG` = `*` to enable debugging
+* `HTTP_PROXY` = set http proxy ex: http_proxy=http://10.203.0.1:5187/
+* `HTTPS_PROXY` = set https proxy ex: https_proxy=https://10.203.0.1:5187/
+* `NO_PROXY` = skip/bypass proxy ex: "localhost,127.0.0.1,localaddress,.localdomain.com"
 
 ### Step 4: Stop Microgateway
 ```
@@ -51,6 +54,15 @@ docker start edgemicro
 
 ## TLS certificates
 The container has a mount point on `/opt/apigee/.edgemicro`. You can load the certificates on the mount point and refer to it from the `org-env-config.yaml`
+
+### Self signed certificates
+If you are using CA not trusted by default by node.js, consider using
+`NODE_EXTRA_CA_CERTS` = A file path to the file that should consist of one or more trusted certificates in PEM format
+
+Whlie we recommend this flag never be used, you could also set
+`NODE_TLS_REJECT_UNAUTHORIZED` = 1
+
+to turn off validation
 
 ## Using custom plugins
 There are two options to deal with custom plugins:
