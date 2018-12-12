@@ -444,9 +444,6 @@ const setup = function setup() {
         .description('upgrade kvm to support JWT Key rotation')
         .action((options) => {
             options.error = optionError;
-            if (!options.username) {
-                return options.error('username is required');
-            }
             if (!options.org) {
                 return options.error('org is required');
             }
