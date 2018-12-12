@@ -63,7 +63,10 @@ Whlie we recommend this flag never be used, you could also set
 `NODE_TLS_REJECT_UNAUTHORIZED` = 1
 to turn off validation. This option is NOT provided in the default docker image. Please build a new image to support this option.
 
-Here is an example of how to use this feature (along with self-signed certificates):
+
+### Example to setup Northbound TLS
+
+Here is an example of how to use this feature (along with self-signed certificates) for setting:
 
 #### Preparation
 In the opensssl.cnf file, add the following stanza to generate the right SNI attributes
@@ -180,6 +183,151 @@ OUTPUT:
 ....
 ....
 ....
+```
+
+### Example to setup southbound TLS
+
+In this setup you'll setup TLS to a target/southbound application
+
+#### Preparation
+
+In the opensssl.cnf file, add the following stanza to generate the right SNI attributes
+```
+[ alt_names ]
+DNS.1 = helloworld
+DNS.2 = localhost
+DNS.3 = localhost.localdomain
+DNS.4 = 127.0.0.1
+DNS.5 = ::1
+DNS.6 = fe80::1
+```
+
+#### Sample application
+
+Here is a sample node.js application that will serve as a target app
+
+server.js
+```
+'use strict';
+
+const express = require('express');
+const https = require('https');
+const fs = require('fs');
+
+
+const options = {
+  key: fs.readFileSync("tls.key"),
+  cert: fs.readFileSync("tls.crt")
+};
+
+// Constants
+const PORT = 9443;
+const HOST = '0.0.0.0';
+
+// App
+const app = express();
+app.get('/', (req, res) => {
+  res.send('Hello world\n');
+});
+
+https.createServer(options, app).listen(PORT);
+```
+
+Dockerfile
+```
+FROM node:8-alpine
+WORKDIR /usr/src/app
+COPY package*.json ./
+
+RUN npm install
+COPY . .
+EXPOSE 9443
+CMD [ "npm", "start" ]
+```
+
+build the Docker image
+
+```
+docker build -t helloworld . 
+```
+
+#### Start the sample app
+
+```
+docker run -P -p 9443:9443 --name helloworld helloworld
+```
+
+#### Create a edgemicro proxy in Edge
+
+Proxy name: `edgemicro_local`
+Revision: `1`
+Basepath: `/local`
+Target: `https://helloworld:9443`
+
+Create a Product and Developer App (please see Microgateway docs on how these are setup).
+
+#### Start Microgateway
+
+```
+docker run -P -p 8443:8443 -d --name edgemicro -v ~/workspace/tmp/tls:/opt/apigee/.edgemicro -v ~/workspace/tmp/tls:/opt/apigee/logs -e EDGEMICRO_PORT=8443 -e EDGEMICRO_ORG=$EDGEMICRO_ORG -e EDGEMICRO_ENV=$EDGEMICRO_ENV -e EDGEMICRO_KEY=$EDGEMICRO_KEY -e EDGEMICRO_SECRET=$EDGEMICRO_SECRET -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG --link helloworld:helloworld gcr.io/apigee-microgateway/edgemicro
+```
+
+NOTE: We have used `--link` to link the two containers.
+
+Test the proxy:
+```
+curl https://localhost:8443/local -k -H "x-api-key: xxxx" -v
+```
+
+You should see an error:
+```
+...
+*  subject: C=CA; ST=Ontario; L=Toronto; O=Google Canada; OU=Google Cloud Platform; CN=edgemicro; emailAddress=srinandans@google.com
+*  start date: Dec 10 02:12:22 2018 GMT
+*  expire date: Sep 29 02:12:22 2021 GMT
+*  issuer: C=CA; ST=Ontario; L=Toronto; O=Google Canada; OU=Google Cloud Platform; CN=edgemicro; emailAddress=srinandans@google.com
+*  SSL certificate verify result: unable to get local issuer certificate (20), continuing anyway.
+> GET /local HTTP/1.1
+> Host: localhost:8443
+> User-Agent: curl/7.54.0
+> Accept: */*
+> x-api-key: 9fVC65pFj8LrmlPmVyxFjx4KgAHTxqSd
+>
+< HTTP/1.1 502 Bad Gateway
+< Date: Wed, 12 Dec 2018 05:25:01 GMT
+< Connection: keep-alive
+< Content-Length: 93
+<
+* Connection #0 to host localhost left intact
+{"message":"unable to verify the first certificate","code":"UNABLE_TO_VERIFY_LEAF_SIGNATURE"}
+```
+
+Re-run MG, but this time with the NODE_EXTRA_CA_CERTS variable set. 
+NOTE: The pem file in the NODE_EXTRA_CA_CERTS variable must have the target's CA (in this case `helloworld`)
+
+```
+docker run -P -p 8443:8443 -d --name edgemicro -v ~/workspace/tmp/tls:/opt/apigee/.edgemicro -v ~/workspace/tmp/tls:/opt/apigee/logs -e NODE_EXTRA_CA_CERTS=/opt/apigee/.edgemicro/rootca.pem -e EDGEMICRO_PORT=8443 -e EDGEMICRO_ORG=$EDGEMICRO_ORG -e EDGEMICRO_ENV=$EDGEMICRO_ENV -e EDGEMICRO_KEY=$EDGEMICRO_KEY -e EDGEMICRO_SECRET=$EDGEMICRO_SECRET -e EDGEMICRO_CONFIG=$EDGEMICRO_CONFIG --link helloworld:helloworld gcr.io/apigee-microgateway/edgemicro
+```
+
+Expected output:
+```
+...
+> GET /local HTTP/1.1
+> Host: localhost:8443
+> User-Agent: curl/7.54.0
+> Accept: */*
+> x-api-key: 9fVC65pFj8LrmlPmVyxFjx4KgAHTxqSd
+>
+< HTTP/1.1 200 OK
+< x-powered-by: Express
+< content-type: text/html; charset=utf-8
+< etag: W/"c-M6tWOb/Y57lesdjQuHeB1P/qTV0"
+< date: Wed, 12 Dec 2018 05:49:28 GMT
+< x-response-time: 421
+< Connection: keep-alive
+< Transfer-Encoding: chunked
+<
+Hello world
 ```
 
 ## Using custom plugins
