@@ -37,12 +37,10 @@ module.exports = function(edge_config, virtualHosts) {
 }
 // deploys internal apiproxy to specified managementUrl
 Deployment.prototype.deployEdgeMicroInternalProxy = function deployEdgeMicroInternalProxy(options, callback) {
-    const opts = {
+    var opts = {
         organization: options.org,
         environments: options.env,
         baseuri: this.managementUri,
-        username: options.username,
-        password: options.password,
         debug: options.debug,
         verbose: options.debug,
         api: 'edgemicro-internal',
@@ -51,6 +49,13 @@ Deployment.prototype.deployEdgeMicroInternalProxy = function deployEdgeMicroInte
         'resolve-modules': false,
         virtualhosts: this.virtualHosts || 'default'
     };
+
+    if (options.token) {
+        opts.token = options.token;
+    } else {
+        opts.username = options.username;
+        opts.password = options.password;
+    }    
 
     apigeetool.deployProxy(opts, function(err, res) {
         if (err) {
@@ -119,6 +124,38 @@ Deployment.prototype.deployWithLeanPayload = function deployWithLeanPayload(opti
     })
 }
 
+// checks for previously deployed edgemicro internal proxies
+Deployment.prototype.checkDeployedInternalProxies = function checkDeployedInternalProxies(options, cb) {
+    //console.log('checking for previously deployed proxies')
+    const opts = {
+        organization: options.org,
+        api: 'edgemicro-internal',
+        baseuri: this.managementUri,
+        debug: options.debug
+    };
+
+    if (options.token) {
+        opts.token = options.token;
+    } else {
+        opts.username = options.username;
+        opts.password = options.password;
+    }
+    const that = this;
+    apigeetool.listDeployments(opts, function(err, proxies) {
+        if (err) {
+            if (err.message.includes("404")) {
+                return cb(null, options);
+            } else {
+                return cb(err, options);    
+            }            
+        }
+        else {
+            options.internaldeployed = true;
+            cb(null, options);
+        }
+    });
+}
+
 // checks for previously deployed edgemicro proxies
 Deployment.prototype.checkDeployedProxies = function checkDeployedProxies(options, cb) {
     //console.log('checking for previously deployed proxies')
@@ -137,16 +174,13 @@ Deployment.prototype.checkDeployedProxies = function checkDeployedProxies(option
     }
     const that = this;
     apigeetool.listDeployments(opts, function(err, proxies) {
-        
         if (err) {
-            options.deployed = false;
             if (err.message.includes("404")) {
                 return cb(null, options);
             } else {
                 return cb(err, options);    
             }            
         }
-        //_.assign(options, proxies);
         else {
             options.deployed = true;
             cb(null, options);
