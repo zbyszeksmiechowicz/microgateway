@@ -324,6 +324,9 @@ Private.prototype.configureEdgemicroWithCreds = function configureEdgemicroWithC
                 }
 
                 agentConfig['analytics']['uri'] = bootstrapUri.replace('bootstrap', 'axpublisher');
+                agentConfig['analytics']['bufferSize'] = 100;
+                agentConfig['analytics']['batchSize'] = 50;
+                agentConfig['analytics']['flushInterval'] = 500;
             }
 
             console.log();
@@ -383,7 +386,6 @@ Private.prototype.generateKeysWithPassword = function generateKeysWithPassword(o
             secret: secret
         };
 
-        // NOTE: getting classification failure
         debug('sending', JSON.stringify(keys), 'to', credentialUrl);
         request({
             uri: credentialUrl,
@@ -400,7 +402,10 @@ Private.prototype.generateKeysWithPassword = function generateKeysWithPassword(o
                 debug('getting region from', regionUrl);
                 request({
                     uri: regionUrl,
-                    auth: generateCredentialsObject(options),
+                    auth: {   // switch authorization to use the key/secret we just uploaded
+                        username: key,
+                        password: secret
+                      },
                     json: true
                 }, function(err, res) {
                     err = translateError(err, res);

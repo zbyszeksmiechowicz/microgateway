@@ -43,12 +43,13 @@ module.exports = function() {
                 if (!options.username) {
                     return options.error('username is required');
                 }
-
-                promptForPassword(options, (options) => {
-                    if (!options.password) {
-                        return options.error('password is required');
-                    }
-                });
+                if (!options.password) {
+                    promptForPassword(options, (options) => {
+                        if (!options.password) {
+                            return options.error('password is required');
+                        }
+                    });
+                }
             }
 
             if (options.key || options.cert) {
