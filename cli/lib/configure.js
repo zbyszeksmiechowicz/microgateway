@@ -86,6 +86,7 @@ Configure.prototype.configure = function configure(options, cb) {
     targetFile: targetFile,
     overwrite: true
   }, function (err, configPath) {
+    options.deployed = false;
     deployAuth.checkDeployedProxies(options, (err, options) => {
       if (err) {
         console.error(err);
@@ -109,7 +110,7 @@ function configureEdgemicroWithCreds(options, cb) {
   var tasks = [],
     agentConfigPath;
 	
-  if (!options.deployed) {
+  if (options.deployed == false) {
     tasks.push(function (callback) {
       deployAuth.deployWithLeanPayload(options, callback);
     });
@@ -154,7 +155,7 @@ function configureEdgemicroWithCreds(options, cb) {
 
     addEnvVars(agentConfig);
 
-    if (!options.deployed) {  
+    if (options.deployed == false) {  
       agentConfig['edge_config']['jwt_public_key'] = (options.url ? options.url+"/edgemicro-auth/publicKey" : results[0]); // get deploy results
       agentConfig['edge_config'].bootstrap = results[2].bootstrap; // get genkeys results
     } else {
@@ -189,7 +190,7 @@ function configureEdgemicroWithCreds(options, cb) {
     edgeconfig.save(agentConfig, agentConfigPath); // if it didn't throw, save succeeded
     console.log();
 
-    if (options.deployed) {  
+    if (options.deployed == true) {  
       console.log('vault info:\n', results[0]);
     } else {
       console.log('vault info:\n', results[1]);

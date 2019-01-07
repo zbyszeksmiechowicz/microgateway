@@ -29,39 +29,27 @@ module.exports = function() {
         .action((options) => {
             options.error = optionError;
             options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+            options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
 
-            if (options.token) {
-                //If there is a token lets configure with standard opts.
-                if (!options.org) {
-                    return options.error('org is required');
-                }
-                if (!options.env) {
-                    return options.error('env is required');
-                }
-                options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
-
-            } else {
+            if (!options.org) {
+                return options.error('org is required');
+            }
+            if (!options.env) {
+                return options.error('env is required');
+            }            
+            //if token is not passed, username is mandatory
+            if (!options.token) {
                 //If there is no token then we can go through the password process
                 if (!options.username) {
                     return options.error('username is required');
                 }
-                if (!options.org) {
-                    return options.error('org is required');
+                if (!options.password) {
+                    promptForPassword(options, (options) => {
+                        if (!options.password) {
+                            return options.error('password is required');
+                        }
+                    });
                 }
-                if (!options.env) {
-                    return options.error('env is required');
-                }
-                if (options.key || options.cert) {
-                    if (!options.key || !options.cert) {
-                        return options.error('key and cert must be passed together');
-                    }
-                }
-                options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
-                promptForPassword(options, (options) => {
-                    if (!options.password) {
-                        return options.error('password is required');
-                    }
-                })
             }
 
             if (options.key || options.cert) {
@@ -77,18 +65,13 @@ module.exports = function() {
                 return options.error('mgmtUrl is required');
             }
             if (!options.runtimeUrl.includes('http')) {
-                return options.error('runtimeUrl requires a prototcol http or https')
+                return options.error('runtimeUrl requires a prototcol http or https');
             }
             if (!options.mgmtUrl.includes('http')) {
-                return options.error('runtimeUrl requires a prototcol http or https')
+                return options.error('runtimeUrl requires a prototcol http or https');
             }
 
-            promptForPassword(options, (options) => {
-                if (!options.password) {
-                    return options.error('password is required');
-                }
-                privateOperations.configureEdgemicro(options)
-            });
+            privateOperations.configureEdgemicro(options);
         });
 
     app
@@ -99,12 +82,24 @@ module.exports = function() {
         .option('-p, --password <password>', 'password of the organization admin')
         .option('-v, --virtualhost <virtualhost>', 'virtual host of the proxy')
         .option('-m, --mgmt-url <mgmtUrl>', 'the URL of the management server')
+        .option('-t, --token <token>', 'OAuth token to use with management API')
         .description('upgrade kvm to support JWT Key rotation')
         .action((options) => {
             options.error = optionError;
-            if (!options.username) {
-                return options.error('username is required');
+            options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+
+            if (!options.token) {
+                if (!options.username) {
+                    return options.error('username is required');
+                }
+
+                promptForPassword(options, (options) => {
+                    if (!options.password) {
+                        return options.error('password is required');
+                    }
+                });
             }
+
             if (!options.org) {
                 return options.error('org is required');
             }
@@ -121,12 +116,8 @@ module.exports = function() {
                 return options.error('runtimeUrl requires a prototcol http or https')
             }
 
-            promptForPassword(options, (options) => {
-                if (!options.password) {
-                    return options.error('password is required');
-                }
-                upgradekvm.upgradekvm(options, () => {});
-            })
+            upgradekvm.upgradekvm(options, () => {});
+
         });
 
     app
@@ -137,11 +128,22 @@ module.exports = function() {
         .option('-p, --password <password>', 'password of the organization admin')
         .option('-v, --virtualhost <virtualhost>', 'virtual host of the proxy')
         .option('-m, --mgmt-url <mgmtUrl>', 'the URL of the management server')
+        .option('-t, --token <token>', 'OAuth token to use with management API')
         .description('upgrade edgemicro-auth proxy')
         .action((options) => {
             options.error = optionError;
-            if (!options.username) {
-                return options.error('username is required');
+            options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+            
+            if (!options.token) {
+                if (!options.username) {
+                    return options.error('username is required');
+                }
+
+                promptForPassword(options, (options) => {
+                    if (!options.password) {
+                        return options.error('password is required');
+                    }
+                });
             }
             if (!options.org) {
                 return options.error('org is required');
@@ -156,12 +158,8 @@ module.exports = function() {
                 return options.error('runtimeUrl requires a prototcol http or https')
             }
 
-            promptForPassword(options, (options) => {
-                if (!options.password) {
-                    return options.error('password is required');
-                }
-                upgradeauth.upgradeauth(options, () => {});
-            })
+            upgradeauth.upgradeauth(options, () => {});
+
         });
 
     app
@@ -172,11 +170,22 @@ module.exports = function() {
         .option('-p, --password <password>', 'password of the organization admin')
         .option('-k, --kid <kid>', 'new key identifier')
         .option('-m, --mgmt-url <mgmtUrl>', 'the URL of the management server')
+        .option('-t, --token <token>', 'OAuth token to use with management API')
         .description('Rotate JWT Keys')
         .action((options) => {
             options.error = optionError;
-            if (!options.username) {
-                return options.error('username is required');
+            options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+
+            if (!options.token) {
+                if (!options.username) {
+                    return options.error('username is required');
+                }
+
+                promptForPassword(options, (options) => {
+                    if (!options.password) {
+                        return options.error('password is required');
+                    }
+                });
             }
             if (!options.org) {
                 return options.error('org is required');
@@ -190,12 +199,9 @@ module.exports = function() {
             if (!options.mgmtUrl.includes('http')) {
                 return options.error('runtimeUrl requires a prototcol http or https')
             }
-            promptForPassword(options, (options) => {
-                if (!options.password) {
-                    return options.error('password is required');
-                }
-                rotatekey.rotatekey(options, () => {});
-            })
+
+            rotatekey.rotatekey(options, () => {});
+            
         });
 
     app.parse(process.argv);
