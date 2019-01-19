@@ -6,6 +6,7 @@ builds:
     goos:
       - linux
       - darwin
+      - windows
 archive:
   name_template: "{{ .ProjectName }}_{{.Tag}}_{{ .Os }}_{{ .Arch }}"
   replacements:
