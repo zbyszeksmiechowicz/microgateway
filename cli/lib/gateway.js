@@ -177,6 +177,9 @@ Gateway.prototype.start = (options) => {
             if (configurl) opts.configurl = configurl;
             var self = this;
             edgeconfig.get(opts, (err, newConfig) => {
+                if(validator(newConfig) == false && !err) {
+                    err = {};
+                }
                 if (err) {
                     // failed to check new config. so try to check again after pollInterval
                     console.error('Failed to check for change in Config. Will retry after ' + pollInterval + ' seconds');
@@ -335,5 +338,51 @@ function hasConfigChanged(oldConfig, newConfig) {
                 debug("Unchanged->" + part.value);
         });
         return true;
+    }
+}
+
+function validator(newConfig) {
+    
+    //checkObject(newConfig.product_to_proxy) && 
+    //checkObject(newConfig.product_to_api_resource)
+
+    if (checkObject(newConfig) &&
+        checkObject(newConfig.analytics) && 
+        checkObject(newConfig.analytics.source) && 
+        checkObject(newConfig.analytics.proxy) && 
+        checkObject(newConfig.analytics.key) && 
+        checkObject(newConfig.analytics.secret) &&
+        checkObject(newConfig.analytics.uri) &&
+        checkObject(newConfig.edgemicro) && 
+        checkObject(newConfig.edgemicro.port) && 
+        checkObject(newConfig.edgemicro.max_connections) &&
+        checkObject(newConfig.headers) && 
+        checkArray(newConfig.proxies)) { 
+        debug("configuration incomplete or invalid, skipping configuration");
+        return false;
+    }
+
+    return true;
+}
+
+function checkObject (o) {
+    if (o === null) {
+        return false;
+    }
+    if (typeof o === 'object' && o instanceof Object && !(o instanceof Array)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function checkArray(a) {
+    if (a === null) {
+        return false;
+    }
+    if (typeof a === 'object' && a instanceof Array) {
+        return true;
+    } else {
+        return false;
     }
 }
