@@ -20,12 +20,14 @@ module.exports = function() {
 
 Token.prototype.decodeToken = function( options ) {
   assert(options.file,"file is required")
-  const jtw = require('../api/helpers/jwt');
   const token = fs.readFileSync(path.resolve(options.file), 'utf8').trim();
-  jtw.decode(token, function(err, result) {
-    if (err) { return printError(err); }
-    console.log(result);
-  });
+  try{ 
+    const decodedJWT = jwt.decode(token, {complete:true}); 
+    console.log(decodedJWT);
+    return decodedJWT;
+  }catch(err) {
+    console.error(err);
+  }
 }
 
 Token.prototype.verifyToken = function(options, cb) {
