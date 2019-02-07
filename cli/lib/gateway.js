@@ -357,7 +357,7 @@ function validator(newConfig) {
         checkObject(newConfig.edgemicro.port) && 
         checkObject(newConfig.edgemicro.max_connections) &&
         checkObject(newConfig.headers) && 
-        checkArray(newConfig.proxies)) { 
+        Array.isArray(newConfig.proxies)) { 
         debug("configuration incomplete or invalid, skipping configuration");
         return false;
     }
@@ -366,23 +366,5 @@ function validator(newConfig) {
 }
 
 function checkObject (o) {
-    if (o === null) {
-        return false;
-    }
-    if (typeof o === 'object' && o instanceof Object && !(o instanceof Array)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function checkArray(a) {
-    if (a === null) {
-        return false;
-    }
-    if (typeof a === 'object' && a instanceof Array) {
-        return true;
-    } else {
-        return false;
-    }
+    return (typeof o === 'object' && o instanceof Object && !(o instanceof Array));
 }
