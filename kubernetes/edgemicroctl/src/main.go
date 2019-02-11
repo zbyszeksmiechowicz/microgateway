@@ -54,6 +54,7 @@ const version string = "1.0.0"
 
 var infoLogger bool
 var sideCar = false
+var mgDebug = false
 
 //log levels, default is error
 var (
@@ -150,6 +151,9 @@ func createContainer(img string) v1.Container {
 	container.Env = append(container.Env, createEnv("EDGEMICRO_KEY", "mgwsecret", "mgkey"))
 	container.Env = append(container.Env, createEnv("EDGEMICRO_SECRET", "mgwsecret", "mgsecret"))
 	container.Env = append(container.Env, createEnv("EDGEMICRO_CONFIG", "mgwsecret", "mgconfig"))
+	if mgDebug {
+		container.Env = append(container.Env, createEnvVal("DEBUG", "*"))
+	}
 	if sideCar {
 		container.Env = append(container.Env, createEnvVal("EDGEMICRO_DECORATOR", "1"))
 		container.Env = append(container.Env, createEnvVal("EDGEMICRO_LOCAL_PROXY", "1"))
@@ -412,6 +416,7 @@ func usage(message string) {
 	fmt.Println("mgVer  = Microgateway version; default is latest")
 	fmt.Println("img  = Apigee Edge Microgateway docker image (optional)")
 	fmt.Println("debug  = Enable debug mode (default: false)")
+	fmt.Println("mgdebug = Enable MG debug (default: false)")
 	fmt.Println("")
 	fmt.Println("")
 	fmt.Println("Example for Sidecar: edgemicroctl -org=trial -env=test -conf=trial-test-config.yaml -svc=myservice.yaml -key=xxxx -sec=xxxx")
@@ -449,6 +454,7 @@ func main() {
 	flag.StringVar(&img, "img", "", "Apigee Edge Microgateway docker image")
 	flag.BoolVar(&infoLogger, "debug", false, "Enable debug mode")
 	flag.StringVar(&namespace, "nam", "default", "Kubernetes namespace")
+	flag.BoolVar(&mgDebug,"mgdebug", false, "Enable debug on the MG container")
 
 	// Parse commandline parameters
 	flag.Parse()
