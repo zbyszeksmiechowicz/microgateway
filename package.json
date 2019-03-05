@@ -46,6 +46,7 @@
     "gulp-sourcemaps": "^1.5.2",
     "minimist": "^1.1.1",
     "mocha": "^5.2.0",
+    "nyc": "^13.3.0",
     "restify": "^4.0.4",
     "run-sequence": "^1.1.0"
   },
@@ -58,7 +59,8 @@
     "start": "node app.js",
     "stop": "node stop.js",
     "package": "node cli/package.js",
-    "test": "mocha --timeout 17000 tests"
+    "test": "mocha --timeout 17000 tests/*.unit.test.js",
+    "test:integration": "nyc mocha tests/*.*.integ.test.js --timeout 90000"
   },
   "directories": {
     "doc": "docs",
