@@ -18,7 +18,7 @@ module.exports = function() {
 };
 
 Cert.prototype.installCert = function(options, cb) {
-  if ( !options.username ){
+  if ( !options.username && !options.token){
     return  options.error('username is required');
   }
   if ( !options.org ) {
@@ -27,7 +27,7 @@ Cert.prototype.installCert = function(options, cb) {
   if ( !options.env ) {
     return  options.error('env is required');
   }
-  if ( !options.password ) {
+  if ( !options.password && !options.token) {
     return  options.error('password is required');
   }
   const config = edgeconfig.load({ source: configLocations.getSourcePath(options.org, options.env) });
@@ -47,8 +47,8 @@ Cert.prototype.checkCert = function(options, cb) {
   assert(options.org,"org is required");
   assert(options.env,"env is required")
 
-  assert(options.username,"username is required");
-  assert(options.password,"password is required")
+  assert(options.username || options.token,"username is required");
+  assert(options.password || options.token,"password is required")
 
   const config = edgeconfig.load({ source: configLocations.getSourcePath(options.org, options.env) });
   if (options.url) {
@@ -80,8 +80,8 @@ Cert.prototype.deleteCert = function(options,cb) {
   assert(options.org,"org is required");
   assert(options.env,"env is required")
 
-  assert(options.username,"username is required");
-  assert(options.password,"password is required")
+  assert(options.username || options.token,"username is required");
+  assert(options.password || options.token,"password is required")
 
 
 
