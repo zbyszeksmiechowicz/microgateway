@@ -10,55 +10,79 @@ const setup = function setup() {
     .command('install')
     .option('-o, --org <org>', 'the organization')
     .option('-e, --env <env>', 'the environment')
+    .option('-t, --token <token>', 'OAuth token to use with management API')
     .option('-u, --username <user>', 'username of the organization admin')
     .option('-p, --password <password>', 'password of the organization admin')
     .option('-f, --force', 'replace any existing keys')
     .description('install a certificate for your organization')
     .action((options) => {
       options.error = optionError;
-      if (!options.username) { return  options.error('username is required'); }
-      if (!options.org) { return  options.error('org is required'); }
-      if (!options.env) { return  options.error('env is required'); }
-      promptForPassword(options,(options)=>{
-        if (!options.password) { return  options.error('password is required'); }
-        cert.installCert(options)
-      });
+      options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+      if (options.token) {
+        if (!options.org) { return options.error('org is required'); }
+        if (!options.env) { return options.error('env is required'); }
+        cert.installCert(options);
+      } else {
+        if (!options.username) { return  options.error('username is required'); }
+        if (!options.org) { return  options.error('org is required'); }
+        if (!options.env) { return  options.error('env is required'); }
+        promptForPassword(options,(options)=>{
+          if (!options.password) { return  options.error('password is required'); }
+          cert.installCert(options)
+        });
+      }
     });
 
   commander
     .command('delete')
     .option('-o, --org <org>', 'the organization')
     .option('-e, --env <env>', 'the environment')
+    .option('-t, --token <token>', 'OAuth token to use with management API')
     .option('-u, --username <user>', 'username of the organization admin')
     .option('-p, --password <password>', 'password of the organization admin')
     .description('delete the certificate for your organization')
     .action((options) => {
       options.error = optionError;
-      if (!options.username) { return  options.error('username is required'); }
-      if (!options.org) { return  options.error('org is required'); }
-      if (!options.env) { return  options.error('env is required'); }
-      promptForPassword(options,(options)=>{
-        if (!options.password) { return  options.error('password is required'); }
-        cert.deleteCert(options)
-      });
+      options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+      if (options.token) {
+        if (!options.org) { return options.error('org is required'); }
+        if (!options.env) { return options.error('env is required'); }
+        cert.deleteCert(options);
+      } else {
+        if (!options.username) { return  options.error('username is required'); }
+        if (!options.org) { return  options.error('org is required'); }
+        if (!options.env) { return  options.error('env is required'); }
+        promptForPassword(options,(options)=>{
+          if (!options.password) { return  options.error('password is required'); }
+          cert.deleteCert(options)
+        });
+      }
     });
 
   commander
     .command('check')
     .option('-o, --org <org>', 'the organization')
     .option('-e, --env <env>', 'the environment')
+    .option('-t, --token <token>', 'OAuth token to use with management API')
     .option('-u, --username <user>', 'username of the organization admin')
     .option('-p, --password <password>', 'password of the organization admin')
     .description('check that your organization has a certificate installed')
     .action((options) => {
       options.error = optionError;
-      if (!options.username) { return  options.error('username is required'); }
-      if (!options.org) { return  options.error('org is required'); }
-      if (!options.env) { return  options.error('env is required'); }
-      promptForPassword(options,(options)=>{
-        if (!options.password) { return  options.error('password is required'); }
-        cert.checkCert(options)
-      });
+      options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+      if (options.token) {
+        if (!options.org) { return options.error('org is required'); }
+        if (!options.env) { return options.error('env is required'); }
+        cert.checkCert(options);
+      } else {
+        if (!options.username) { return  options.error('username is required'); }
+        if (!options.org) { return  options.error('org is required'); }
+        if (!options.env) { return  options.error('env is required'); }
+        promptForPassword(options,(options)=>{
+          if (!options.password) { return  options.error('password is required'); }
+          cert.checkCert(options)
+        });
+      }
     });
 
   commander
