@@ -28,7 +28,7 @@
     "microgateway-config": "2.4.18-beta.1",
     "microgateway-core": "2.5.15-beta",
     "microgateway-edgeauth": "^2.4.10",
-    "microgateway-plugins": "^2.3.31-beta",
+    "microgateway-plugins": "^2.5.31-beta",
     "pem": "^1.8.1",
     "portastic": "^1.0.1",
     "request": "^2.87.0",
