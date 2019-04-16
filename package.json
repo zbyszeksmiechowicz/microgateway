@@ -1,6 +1,6 @@
 {
   "name": "edgemicro",
-  "version": "2.5.33-beta.2",
+  "version": "2.5.33-beta.4",
   "description": "Apigee Edge Microgateway",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -26,7 +26,7 @@
     "log-symbols": "^1.0.2",
     "memored": "^1.1.1",
     "microgateway-config": "2.4.18-beta.1",
-    "microgateway-core": "2.5.15-beta",
+    "microgateway-core": "2.5.15-beta.3",
     "microgateway-edgeauth": "^2.4.10",
     "microgateway-plugins": "^2.5.31-beta",
     "pem": "^1.8.1",
