@@ -28,8 +28,8 @@ archive:
     - samples/plugin/plugins/response-uppercase/*.*
     - install/kubernetes/*.*
     - install/kubernetes/config/*.yaml
-git:
-  short_hash: true
+#git:
+#  short_hash: true
 release:
   draft: true
   prerelease: true
