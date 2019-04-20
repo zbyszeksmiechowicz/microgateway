@@ -8,8 +8,6 @@ builds:
       - darwin
       - windows
 archive:
-  - id: edgemicroctl
-    format: zip
   name_template: "{{ .ProjectName }}_{{.Tag}}_{{ .Os }}_{{ .Arch }}"
   replacements:
     darwin: Darwin
@@ -20,7 +18,7 @@ archive:
   wrap_in_directory: true  
   format_overrides:
   - goos: windows
-    # format: zip
+    format: zip
   files:
     - LICENSE
     - README.md
@@ -30,8 +28,8 @@ archive:
     - samples/plugin/plugins/response-uppercase/*.*
     - install/kubernetes/*.*
     - install/kubernetes/config/*.yaml
-#git:
-#  short_hash: true
+git:
+ short_hash: true
 release:
   draft: true
   prerelease: true
