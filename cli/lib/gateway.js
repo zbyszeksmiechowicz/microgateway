@@ -33,7 +33,9 @@ Gateway.prototype.start = (options) => {
     } catch (e) {
         // Socket does not exist
         // so ignore and proceed
-        debug(e);
+        if (e.code !== "ENOENT") {
+            debug(e.message);            
+        }
     }
 
     const source = configLocations.getSourcePath(options.org, options.env, options.configDir);
