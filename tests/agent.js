@@ -21,6 +21,7 @@ const secret = envVars.secret;
 const user = envVars.user;
 const org = envVars.org;
 const env = envVars.env;
+console.log('getSourcePath',configLocations.getSourcePath(org, env));
 describe('configured agent/server address', function() {
   const port = 3303;
   var target ;
@@ -33,9 +34,11 @@ describe('configured agent/server address', function() {
     configure.configure({ username: user, password: password, org: org, env: env, error:(msg)=>{done(msg)}}, () => {
       edgeConfig.get({ keys: keys, source: configLocations.getSourcePath(org, env) }, (err, configDownload) => {
         config = configDownload;
+        
         delete config.edgemicro.plugins
         config.proxies[0].url = "http://localhost:" + port + "/";
-        target = "http://localhost:" + config.edgemicro.port + "/edgemicro_hello/";
+        config.proxies[0].base_path = "/edgemicro_hello";
+        target = "http://localhost:" + config.edgemicro.port + '/edgemicro_hello';
         agent.start(keys, null, config, done);
         config = configDownload;
       });
