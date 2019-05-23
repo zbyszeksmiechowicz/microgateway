@@ -8,6 +8,8 @@ const org = process.env.MOCHA_ORG;
 const env = process.env.MOCHA_ENV;
 const tokenSecret = process.env.MOCHA_TOKEN_SECRET;
 const tokenId = process.env.MOCHA_TOKEN_ID;
+const otoken = process.env.MOCHA_SAML_TOKEN || '';
+
 
 assert(password, 'Must set environment variable MOCHA_PASSWORD');
 assert(user, 'Must set environment variable MOCHA_USER');
@@ -19,12 +21,13 @@ assert(tokenId, 'Must set environment variable MOCHA_TOKEN_ID');
 assert(tokenSecret, 'Must set environment variable MOCHA_TOKEN_SECRET');
 
 module.exports = {
-  password,
-  key,
-  secret,
-  user,
-  org,
-  env,
-  tokenSecret,
-  tokenId
+  password:password,
+  key:key,
+  secret:secret,
+  user:user,
+  org:org,
+  env:env,
+  tokenSecret:tokenSecret,
+  tokenId:tokenId,
+  otoken:otoken
 };
