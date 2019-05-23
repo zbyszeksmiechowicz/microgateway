@@ -15,6 +15,7 @@ const defaultPollInterval = 600;
 const uuid = require('uuid/v1');
 const debug = require('debug')('microgateway');
 const jsdiff = require('diff');
+const _ = require('lodash');
 
 const Gateway = function() {};
 
@@ -326,19 +327,22 @@ function hasConfigChanged(oldConfig, newConfig) {
     //do not compare uid
     delete oldConfig['uid'];
 
-    var diff = jsdiff.diffWords(JSON.stringify(oldConfig), JSON.stringify(newConfig));
-    if (diff.length == 1) {
+    
+    if (_.isEqual(oldConfig, newConfig)) {
         debug("no changes detected");
         return false;
     } else {
-        diff.forEach(function(part) {
-            if (part.added)
-                debug("Added->" + part.value);
-            else if (part.removed)
-                debug("Removed->" + part.value);
-            else
-                debug("Unchanged->" + part.value);
-        });
+        if (debug.enabled) {
+            var diff = jsdiff.diffWords(JSON.stringify(oldConfig), JSON.stringify(newConfig));
+            diff.forEach(function(part) {
+                if (part.added)
+                    debug("Added->" + part.value);
+                else if (part.removed)
+                    debug("Removed->" + part.value);
+                else
+                    debug("Unchanged->" + part.value);
+            });
+        }
         return true;
     }
 }
