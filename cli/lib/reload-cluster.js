@@ -255,7 +255,7 @@ var ReloadCluster = (file, opt) => {
   self.reload = function (cb) {
     if (!cluster.isMaster) return;
     //clear the cache before terminating the process
-    cache.clear(function(){});
+    cache.clean(function(){});
     respawnerTimers.clear();
 
     function allReady(cb) {
