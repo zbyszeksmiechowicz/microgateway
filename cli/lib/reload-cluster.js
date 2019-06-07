@@ -1,7 +1,7 @@
 var cluster = require('cluster');
 var EventEmitter = require('events').EventEmitter;
 var cpuCount = require('os').cpus().length;
-const cache = require('../../third_party/memored/memored');
+const cache = require('microgateway-plugins').memored;
 
 const PURGE_INTERVAL = 60000;
 
