@@ -90,7 +90,7 @@ Gateway.prototype.start = (options,cb) => {
         }
 
         config.uid = uuid();
-        var logger = gateway.Logging.init(config);
+        var logger = gateway.Logging.init(config,options);
         var opt = {};
         delete args.keys;
         //set pluginDir
