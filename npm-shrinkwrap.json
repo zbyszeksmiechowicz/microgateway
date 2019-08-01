@@ -12645,9 +12645,9 @@
       "integrity": "sha512-vqQ7Ft0IYNPHQsnm1rFnh+QiidFMbSTNIuHf8sqe9KlcSYGIVjNGgjWZ+2MFFBDiUk3GXvaITW2Wg3cgu7DfHQ=="
     },
     "microgateway-plugins": {
-      "version": "3.0.3",
-      "resolved": "https://registry.npmjs.org/microgateway-plugins/-/microgateway-plugins-3.0.3.tgz",
-      "integrity": "sha512-adswIAkk3MwtyyXcK112d6imRoJEo+lwOzWlYSPmQsPMXDhn41re70Qd44DKidojfP1YKBEQzGJncqlTv2zIpg==",
+      "version": "3.0.4",
+      "resolved": "https://registry.npmjs.org/microgateway-plugins/-/microgateway-plugins-3.0.4.tgz",
+      "integrity": "sha512-DXVm36uZCcJzvFxJvpxdMOOJ0BRvpK0ZZc2ee2JvlDiyH5ljWlM60h+GpZ3rYy7kxwgVgONTMeEllLvIAU0n1A==",
       "requires": {
         "async": "^1.4.2",
         "debug": "^3.1.0",
