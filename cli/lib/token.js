@@ -74,10 +74,11 @@ Token.prototype.verifyToken = function(options, cb) {
       writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},result);
       cb(null,result)
     });
+    //
   });
 
-
 }
+
 
 Token.prototype.getToken = function(options, cb) {
 
