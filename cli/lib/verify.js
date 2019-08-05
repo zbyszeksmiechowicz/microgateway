@@ -235,7 +235,7 @@ Verify.prototype.verify = function verify(options) {
       }
       downloadedConfig = config;
       async.series(tasks, function ( /*asyncErr, res */ ) {
-      writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},'verification complete');
+        writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},'verification complete');
         agent.close(process.exit); // close and stop agent
       });
     })

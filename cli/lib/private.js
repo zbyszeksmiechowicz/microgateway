@@ -273,7 +273,7 @@ Private.prototype.configureEdgemicroWithCreds = function configureEdgemicroWithC
     }
 
     tasks.push(function(callback) {
-	writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},'checking org for existing KVM');
+	    writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},'checking org for existing KVM');
         that.cert.checkPrivateCert(options, function(err /*, certs */ ) {
             if (err) {
                 writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},'error checking for cert. Installing new cert.');

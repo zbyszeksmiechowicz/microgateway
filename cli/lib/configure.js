@@ -198,6 +198,7 @@ function configureEdgemicroWithCreds(options, cb) {
 
     if (options.deployed === true) {
       writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP}, 'vault info:\n', results[0]);
+    if (options.deployed === true) {  
     } else {
       writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP}, 'vault info:\n', results[1]);
     }
