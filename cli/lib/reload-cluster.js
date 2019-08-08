@@ -4,6 +4,9 @@ var cluster = require('cluster');
 var EventEmitter = require('events').EventEmitter;
 var cpuCount = require('os').cpus().length;
 const cache = require('microgateway-plugins').memored;
+const writeConsoleLog = require('microgateway-core').Logging.writeConsoleLog;
+
+const CONSOLE_LOG_TAG_COMP = 'microgateway reload cluster';
 
 const PURGE_INTERVAL = 60000;
 //
@@ -67,7 +70,7 @@ class ExitCounter {
     gCurrentExitCount = 0;
     this.add(prevExitCount)
     if ( this.averageRate() > this.theta ) {
-      console.log("EXPERIENCING HIGH RATE OF PROCESS EXITS")
+      writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},"EXPERIENCING HIGH RATE OF PROCESS EXITS")
       return(false)
     }
     return(true)
@@ -194,15 +197,13 @@ class CallbackList {
         try {
           cb()
         } catch (e) {
-          console.log(e)
+          writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},e)
         }
       })  // when done eliminate
       this.items = []
     }
   }
 }
-
-
 
 
 class WorkerInfo {
@@ -225,7 +226,7 @@ class WorkerInfo {
         var onset = this.trackingStartTime
         var diff = Date.now() - onset
         //
-        //if ( diff > MAX_CONNECT_FAIL_TIME  )  console.log(`DISCONNECT TIMEOUT ${this.worker_key}`)
+        //if ( diff > MAX_CONNECT_FAIL_TIME  )  writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},`DISCONNECT TIMEOUT ${this.worker_key}`)
         //
         return ( diff > MAX_CONNECT_FAIL_TIME ) 
       }
@@ -299,7 +300,6 @@ function untrackTrackedProcesses() {  // clear out tracked processes and put the
 }
 
 
-
 // --clearOutStoppedProcesses--------------------------------------- 
 // --closePreconditions--------------------------------------- 
 
@@ -334,7 +334,7 @@ function cullProcesses() {
           w_info.request_disconnect = true
         } catch (e) {
           // might have never connected
-          //console.log(e)
+          //writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},e)
         }
       } else if ( !(w.isDead()) && !(w.isConnected()) ) {   // The processes is no longer connected ... so kill it
         requestShutdownNow(w,w_info)
@@ -378,7 +378,6 @@ function clearOutStoppedProcesses(cb,threshold) {
 }
 
 
-
 function workersFullHouse(rlc) {
   var wantsmore = rlc.consonantProcesses();
   var clearoutCount = Object.keys(tClosers).length
@@ -396,14 +395,13 @@ function workersFullHouse(rlc) {
       },intrval)
     } else {
       while ( wantsmore ) {
-        //console.log(wantsmore)
+        //writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},wantsmore)
         rlc.requestNewWorker()
         wantsmore--;
       }  
     }
   }
 }
-
 
 
 // --healthCheck--------------------------------------- 
@@ -417,7 +415,6 @@ function healthCheck(rlc,special) {
     workersFullHouse(rlc)
   }
 }
-
 
 
 const readyCommand = 'ready';
@@ -729,7 +726,7 @@ class ClusterManager extends EventEmitter {
         this.emit('message', worker, message);
       });
       worker.on('error',(e) => {
-        console.log(e.message)
+        writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},e.message)
       })
       //
       // When a worker exits remove the worker reference from workers array, which holds all the workers
@@ -750,7 +747,6 @@ class ClusterManager extends EventEmitter {
     cluster.removeListener('online', this.handleWorkerOnline);
     this.stopExtantTimers()
  }
-
 
 
   // ========================= Application methods ...  (public)
