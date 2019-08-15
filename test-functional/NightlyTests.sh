@@ -3,7 +3,7 @@
 #
 # Author: dkoroth@google.com
 #
-#set -x
+set -x
 
 source ./testhelper.sh
 source ./testEMG.sh
