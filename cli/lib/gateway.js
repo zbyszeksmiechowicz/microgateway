@@ -159,8 +159,7 @@ Gateway.prototype.start = (options,cb) => {
                         process.exit(0);
                     });
                 } else if (message.command === 'status') {
-                    var activeWorkers = mgCluster.activeWorkers();
-                    socket.sendMessage(activeWorkers ? activeWorkers.length : 0);
+			socket.sendMessage(mgCluster.countTracked());
                 }
             });
         });
