@@ -606,3 +606,22 @@ function deleteAPIProduct() {
 
 }
 
+reloadMicrogatewayNow() {
+  EMG_KEY=$(cat edgemicro.configure.txt | grep "key:" | cut -d ' ' -f8)
+  EMG_SECRET=$(cat edgemicro.configure.txt | grep "secret:" | cut -d ' ' -f8)
+  if [ -z $EMG_KEY -o -z $EMG_SECRET ]; then
+     result=1
+     logError "Failed to retrieve emg key and secret from edgemicro.configure.txt"
+     return $result
+  fi
+
+  $EDGEMICRO reload -o $MOCHA_ORG -e $MOCHA_ENV -k $EMG_KEY -s $EMG_SECRET > /dev/null 2>&1
+  result=$?
+  if [ $result -ne 0 ]; then
+       logError "Failed to reload EMG with status $result"
+  else
+       logInfo "Successfully reloaded EMG with status $result"
+  fi
+
+  sleep 10
+}

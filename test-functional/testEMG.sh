@@ -542,3 +542,207 @@ uninstallEMG() {
 
 }
 
+testLogFileCreated() {
+
+  local result=0
+  local logFilename=''
+
+  logInfo "Check if log file created"
+
+  apiKey="API KEY INVALID TO BE LOGGED"
+  curl -q -s http://localhost:8000/v1/${PROXY_NAME} -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logFilename=$(cat edgemicro.logs | grep "logging to" | cut -d ' ' -f7)
+  if [ -z $logFilename  ]; then
+     result=1
+     logError "Failed to create log file"
+  fi
+  return $result
+}
+
+
+testInvalidApiKeyEventLog() {
+
+  local result=0
+  local logFilename=''
+
+  logInfo "Check if log file has error logs for invalid api key"
+
+  # Clear the logs of previous tests
+  logFilename=$(cat edgemicro.logs | grep "logging to" | cut -d ' ' -f7)
+  cat /dev/null > $logFilename
+
+  apiKey="API KEY INVALID TO BE LOGGED"
+  curl -q -s http://localhost:8000/v1/${PROXY_NAME} -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logfiledata=$(cat $logFilename | grep -a "$apiKey")
+  if [[ $logfiledata != *"[error]"* ]]; then
+    result=1
+    logError "Failed to find error log for invalid api key"
+  fi
+
+  return $result
+}
+
+
+testInfoLogs() {
+
+  local result=0
+  local logFilename=''
+
+  logInfo "Check if info system logs are printed in log file"
+
+  # Clear the logs of previous tests
+  logFilename=$(cat edgemicro.logs | grep "logging to" | cut -d ' ' -f7)
+  cat /dev/null > $logFilename
+
+  if [ ! -f $EMG_CONFIG_FILE ];
+  then
+     result=1
+     logError "Failed to locate EMG configure file $EMG_CONFIG_FILE"
+     return $result
+  fi
+
+  #
+  node setYamlVars ${EMG_CONFIG_FILE} 'edgemicro.logging.level' 'info' > tmp_emg_file.yaml
+  cp tmp_emg_file.yaml ${EMG_CONFIG_FILE}
+
+  reloadMicrogatewayNow
+
+
+  logfiledata=$(cat $logFilename | grep -a "info" | cut -d ' ' -f2)
+  if [[ $logfiledata != *"info"* ]]; then
+    result=1
+    logError "Failed to find system info log"
+  fi
+
+  apiKey=$(getDeveloperApiKey ${DEVELOPER_NAME} ${DEVELOPER_APP_NAME})
+
+  curl -q -s http://localhost:8000/v1/${PROXY_NAME} -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logfiledata=$(cat $logFilename | grep -a "[info]" | cut -d ' ' -f2)
+  if [[ $logfiledata != *"[info]"* ]]; then
+    result=1
+    logError "Failed to find event info log"
+  fi
+
+  logDebugfiledata=$(cat $logFilename | grep -a "[debug]" | cut -d ' ' -f2)
+  if [[ $logDebugfiledata == *"[debug]"* ]]; then
+    result=1
+    logError "Found debug log when config level is info"
+  fi
+
+  curl -q -s http://localhost:8000/v1/invalidproxyFortesting -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logTracefiledata=$(cat $logFilename | grep -a "[trace]" | cut -d ' ' -f2)
+  if [[ $logTracefiledata == *"[trace]"* ]]; then
+    result=1
+    logError "Found trace log when config level is info"
+  fi
+
+  return $result
+}
+
+testDebugLogs() {
+
+  local result=0
+  local logFilename=''
+
+  logInfo "Check if debug system logs and event debug event logs are printed in log file"
+
+  # Clear the logs of previous tests
+  logFilename=$(cat edgemicro.logs | grep "logging to" | cut -d ' ' -f7)
+  cat /dev/null > $logFilename
+
+  if [ ! -f $EMG_CONFIG_FILE ];
+  then
+     result=1
+     logError "Failed to locate EMG configure file $EMG_CONFIG_FILE"
+     return $result
+  fi
+
+  #
+  node setYamlVars ${EMG_CONFIG_FILE} 'edgemicro.logging.level' 'debug' 'edgemicro.maxHttpHeaderSize' 400 > tmp_emg_file.yaml
+  cp tmp_emg_file.yaml ${EMG_CONFIG_FILE}
+
+  reloadMicrogatewayNow
+
+
+  logfiledata=$(cat $logFilename | grep -a "debug" | cut -d ' ' -f2)
+  if [[ $logfiledata != *"debug"* ]]; then
+    result=1
+    logError "Failed to find system debug log"
+  fi
+
+  apiKey=$(getDeveloperApiKey ${DEVELOPER_NAME} ${DEVELOPER_APP_NAME})
+
+  curl -q -s http://localhost:8000/v1/${PROXY_NAME} -H "x-api-key: $apiKey-adding-too-log-header-for-testing-$apiKey-$apiKey-$apiKey-$apiKey-$apiKey-$apiKey-$apiKey-$apiKey-$apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 2
+
+  logfiledata=$(cat $logFilename | grep -a "header length more than allowed size")
+  if [[ $logfiledata != *"[debug]"* ]]; then
+    result=1
+    logError "Failed to find event debug log"
+  fi
+
+  curl -q -s http://localhost:8000/v1/invalidproxyFortesting -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logTracefiledata=$(cat $logFilename | grep -a "[trace]" | cut -d ' ' -f2)
+  if [[ $logTracefiledata == *"[trace]"* ]]; then
+    result=1
+    logError "Found trace log when config level is debug"
+  fi
+
+  return $result
+}
+
+testTraceEventLog() {
+
+  local result=0
+  local logFilename=''
+
+  logInfo "Check if trace event logs are printed in log file"
+
+  # Clear the logs of previous tests
+  logFilename=$(cat edgemicro.logs | grep "logging to" | cut -d ' ' -f7)
+  cat /dev/null > $logFilename
+
+  if [ ! -f $EMG_CONFIG_FILE ];
+  then
+     result=1
+     logError "Failed to locate EMG configure file $EMG_CONFIG_FILE"
+     return $result
+  fi
+
+  #
+  node setYamlVars ${EMG_CONFIG_FILE} 'edgemicro.logging.level' 'trace' > tmp_emg_file.yaml
+  cp tmp_emg_file.yaml ${EMG_CONFIG_FILE}
+
+  reloadMicrogatewayNow
+
+
+  apiKey=$(getDeveloperApiKey ${DEVELOPER_NAME} ${DEVELOPER_APP_NAME})
+
+  curl -q -s http://localhost:8000/v1/invalidproxyFortesting -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logfiledata=$(cat $logFilename | grep -a "[trace]" | cut -d ' ' -f2)
+  if [[ $logfiledata != *"[trace]"* ]]; then
+    result=1
+    logError "Failed to find event trace log"
+  fi
+
+  return $result
+}
