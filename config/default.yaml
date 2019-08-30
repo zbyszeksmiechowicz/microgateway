@@ -18,6 +18,7 @@ edgemicro:
     dir: /var/tmp
     stats_log_interval: 60
     rotate_interval: 24
+    stack_trace: false
   plugins:
     sequence:
       - oauth
