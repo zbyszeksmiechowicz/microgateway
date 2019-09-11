@@ -432,6 +432,32 @@ main() {
 
   echo
   testCount=`expr $testCount + 1`
+  echo "$testCount) testInvalidAPIKeyWithUpstreamResp"
+  testInvalidAPIKeyWithUpstreamResp; ret=$?
+  if [ $ret -eq 0 ]; then
+       echo "$STATUS_PASS_STR"
+       testPassCount=`expr $testPassCount + 1`
+  else
+       echo "$STATUS_FAIL_STR"
+       result=1
+       testFailCount=`expr $testFailCount + 1`
+  fi
+
+  echo
+  testCount=`expr $testCount + 1`
+  echo "$testCount) testInvalidAPIKeyWithUpstreamRespFalse"
+  testInvalidAPIKeyWithUpstreamRespFalse; ret=$?
+  if [ $ret -eq 0 ]; then
+       echo "$STATUS_PASS_STR"
+       testPassCount=`expr $testPassCount + 1`
+  else
+       echo "$STATUS_FAIL_STR"
+       result=1
+       testFailCount=`expr $testFailCount + 1`
+  fi
+
+  echo
+  testCount=`expr $testCount + 1`
   echo "$testCount) testLogFileCreated"
   testLogFileCreated; ret=$?
   if [ $ret -eq 0 ]; then
