@@ -340,6 +340,59 @@ testInvalidAPIKey() {
   return $ret
 }
 
+testInvalidAPIKeyWithUpstreamResp() {
+
+  local result=0
+
+  logInfo "Test Invalid API Key with useUpstreamResponse:true"
+
+  node setYamlVars ${EMG_CONFIG_FILE} 'oauth.useUpstreamResponse' true > tmp_emg_file.yaml
+  cp tmp_emg_file.yaml ${EMG_CONFIG_FILE}
+
+  reloadMicrogatewayNow
+
+  apiKey="API KEY INVALID TO BE BLOCKED"
+  curl -q -s http://localhost:8000/v1/${PROXY_NAME} -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+  result=$(grep HTTP headers.txt | cut -d ' ' -f2)
+  if [ ${ret} -eq 0 -a ${result} -eq 401 ]; then
+       logInfo "Successfully tested invalid API Key with code $result"
+  else
+       logError "Failed to test invalid API key with code $result"
+       ret=1
+  fi
+
+  rm -f headers.txt
+
+  return $ret
+}
+
+testInvalidAPIKeyWithUpstreamRespFalse() {
+
+  local result=0
+
+  logInfo "Test Invalid API Key with useUpstreamResponse:false"
+
+  node setYamlVars ${EMG_CONFIG_FILE} 'oauth.useUpstreamResponse' false > tmp_emg_file.yaml
+  cp tmp_emg_file.yaml ${EMG_CONFIG_FILE}
+
+  reloadMicrogatewayNow
+
+  apiKey="API KEY INVALID TO BE BLOCKED"
+  curl -q -s http://localhost:8000/v1/${PROXY_NAME} -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+  result=$(grep HTTP headers.txt | cut -d ' ' -f2)
+  if [ ${ret} -eq 0 -a ${result} -eq 403 ]; then
+       logInfo "Successfully tested invalid API Key with code $result"
+  else
+       logError "Failed to test invalid API key with code $result"
+       ret=1
+  fi
+
+  rm -f headers.txt
+
+  return $ret
+}
+
+
 testRevokedAPIKey() {
 
   local result=0
