@@ -14751,14 +14751,14 @@
       }
     },
     "microgateway-edgeauth": {
-      "version": "3.0.4",
-      "resolved": "https://registry.npmjs.org/microgateway-edgeauth/-/microgateway-edgeauth-3.0.4.tgz",
-      "integrity": "sha512-ci+JMpWH922K3Mi6agz7nqwpzFfhvtmfhYorpSSev7TMpSb+ytTNZ61VC7aevBn1u0gXZaLyGJVi1ymO4K6iog=="
+      "version": "3.0.5",
+      "resolved": "https://registry.npmjs.org/microgateway-edgeauth/-/microgateway-edgeauth-3.0.5.tgz",
+      "integrity": "sha512-RGw/pcCwH+yOJaRoOx7lhabzB+SYus0KST2BLnFJbb++qYL8FkmZGFfNTzMAXBXgIz/Gp0Zflcpu8Vvd++UAog=="
     },
     "microgateway-plugins": {
-      "version": "3.0.6",
-      "resolved": "https://registry.npmjs.org/microgateway-plugins/-/microgateway-plugins-3.0.6.tgz",
-      "integrity": "sha512-NWtzWfSyuYDPGY8cs1/tF1+ssQkGSGVt1wMg2F5c1zCfvDxbPEa7WIXP2GldCgQFDBdQauuY6jPl+1rROHo6hA==",
+      "version": "3.0.8",
+      "resolved": "https://registry.npmjs.org/microgateway-plugins/-/microgateway-plugins-3.0.8.tgz",
+      "integrity": "sha512-CzCTL/fOGuqjH7iL4WbEQpD7Knnq/EWri9QcV1YYtMEJ55PvfAuq4/SsVqcy60zdLB5Vo5z5Conu9ueNO/UC7w==",
       "requires": {
         "async": "^1.4.2",
         "debug": "^3.1.0",
@@ -14774,7 +14774,7 @@
         "toobusy-js": "^0.5.1",
         "volos-analytics-apigee": "^0.4.0",
         "volos-cache-memory": "^0.10.0",
-        "volos-quota-apigee": "^0.13.2",
+        "volos-quota-apigee": "^0.13.3",
         "volos-quota-common": "^0.11.7",
         "volos-quota-memory": "^0.11.0",
         "volos-spikearrest-memory": "^0.10.0",
@@ -16905,9 +16905,9 @@
           "integrity": "sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw=="
         },
         "semver": {
-          "version": "3.0.1",
-          "resolved": "https://registry.npmjs.org/semver/-/semver-3.0.1.tgz",
-          "integrity": "sha1-cgrAElFaJS+R+w3S6ZpWpw1s8Hg="
+          "version": "5.7.1",
+          "resolved": "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz",
+          "integrity": "sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ=="
         },
         "set-blocking": {
           "version": "2.0.0",
@@ -17433,9 +17433,9 @@
           }
         },
         "volos-quota-apigee": {
-          "version": "0.13.2",
-          "resolved": "https://registry.npmjs.org/volos-quota-apigee/-/volos-quota-apigee-0.13.2.tgz",
-          "integrity": "sha512-/CtkiAI4Uj0+oDkRbgRRbnkSjcJ3P2Wpqk/k+yIAVVCqwwKyY1SkHniN9n1r+4SQoV7XmpUcvhk/ZEfPamMOzQ==",
+          "version": "0.13.3",
+          "resolved": "https://registry.npmjs.org/volos-quota-apigee/-/volos-quota-apigee-0.13.3.tgz",
+          "integrity": "sha512-jgMbqfF7llGAkPN91SapKP2M5ropURhut5+ktccYZo/9Z48tVeGithXI5nka+k08zIlCbfIzWnA7agSt+4Vudg==",
           "requires": {
             "apigee-access": ">=1.2.x",
             "debug": "^2.2.0",
@@ -17456,6 +17456,11 @@
               "version": "2.0.0",
               "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
               "integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
+            },
+            "semver": {
+              "version": "3.0.1",
+              "resolved": "https://registry.npmjs.org/semver/-/semver-3.0.1.tgz",
+              "integrity": "sha1-cgrAElFaJS+R+w3S6ZpWpw1s8Hg="
             }
           }
         },
