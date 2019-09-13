@@ -799,3 +799,82 @@ testTraceEventLog() {
 
   return $result
 }
+
+testStackTraceConfig() {
+
+  local result=0
+  local logFilename=''
+
+  logInfo "Check if stack_trace config is working correctly"
+
+  # Clear the logs of previous tests
+  logFilename=$(cat edgemicro.logs | grep "logging to" | cut -d ' ' -f7)
+  cat /dev/null > $logFilename
+
+  if [ ! -f $EMG_CONFIG_FILE ];
+  then
+     result=1
+     logError "Failed to locate EMG configure file $EMG_CONFIG_FILE"
+     return $result
+  fi
+
+  #
+  node setYamlVars ${EMG_CONFIG_FILE} 'edgemicro.logging.level' 'error' 'edgemicro.logging.stack_trace' true > tmp_emg_file.yaml
+  cp tmp_emg_file.yaml ${EMG_CONFIG_FILE}
+
+  reloadMicrogatewayNow
+
+
+  apiKey=$(getDeveloperApiKey ${DEVELOPER_NAME} ${DEVELOPER_APP_NAME})
+
+  curl -q -s http://localhost:8000/v1/invalidproxyFortesting -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logfiledata=$(cat $logFilename | grep -a "Error:" | cut -d ' ' -f1)
+  if [[ $logfiledata != *"Error:"* ]]; then
+    result=1
+    logError "Failed to find trace log when stack_trace is true"
+  fi
+
+  return $result
+}
+
+testStackTraceFalseConfig() {
+
+  local result=0
+  local logFilename=''
+
+  logInfo "Check if stack_trace config is working correctly"
+
+  # Clear the logs of previous tests
+  logFilename=$(cat edgemicro.logs | grep "logging to" | cut -d ' ' -f7)
+  cat /dev/null > $logFilename
+
+  if [ ! -f $EMG_CONFIG_FILE ];
+  then
+     result=1
+     logError "Failed to locate EMG configure file $EMG_CONFIG_FILE"
+     return $result
+  fi
+
+  #
+  node setYamlVars ${EMG_CONFIG_FILE} 'edgemicro.logging.level' 'error' 'edgemicro.logging.stack_trace' false > tmp_emg_file.yaml
+  cp tmp_emg_file.yaml ${EMG_CONFIG_FILE}
+
+  reloadMicrogatewayNow
+
+  apiKey=$(getDeveloperApiKey ${DEVELOPER_NAME} ${DEVELOPER_APP_NAME})
+
+  curl -q -s http://localhost:8000/v1/invalidproxyFortesting -H "x-api-key: $apiKey" -D headers.txt > /dev/null 2>&1 ; ret=$?
+
+  sleep 5
+
+  logfiledata=$(cat $logFilename | grep -a "Error:" | cut -d ' ' -f1)
+  if [[ $logfiledata == *"Error:"* ]]; then
+    result=1
+    logError "Found trace log when stack_trace is false"
+  fi
+
+  return $result
+}
