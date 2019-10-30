@@ -34,10 +34,7 @@ KeyGen.prototype.revoke = function(options, cb) {
 
     request({
             uri: regionUrl,
-            auth: {
-                username: options.key,
-                password: options.secret
-            },
+            auth: generateCredentialsObject(options),
             json: true
         }, function(err, res) {
             err = translateError(err, res);
@@ -73,7 +70,7 @@ KeyGen.prototype.revoke = function(options, cb) {
 							}
                     });
 				}
-			}			
+			}
 		});
 }
 
@@ -134,10 +131,7 @@ KeyGen.prototype._generate = function _generate(options, cb) {
     request({
       uri: credentialUrl,
       method: 'POST',
-      auth: {
-        username: options.username,
-        password: options.password
-      },
+      auth: generateCredentialsObject(options),
       json: keys
     }, function(err, res) {
       err = translateError(err, res);
@@ -199,6 +193,18 @@ KeyGen.prototype._generate = function _generate(options, cb) {
 
 }
 
+function generateCredentialsObject(options) {
+    if (options.token) {
+        return {
+            'bearer': options.token
+        };
+    } else {
+        return {
+            user: options.username,
+            pass: options.password
+        };
+    }
+}
 
 function translateError(err, res) {
   if (!err && res.statusCode >= 400) {

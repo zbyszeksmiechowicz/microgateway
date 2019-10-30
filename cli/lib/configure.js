@@ -34,12 +34,12 @@ module.exports = function () {
   return new Configure();
 }
 
-Configure.prototype.configure = function configure(options, cb) {    
+Configure.prototype.configure = function configure(options, cb) {
   if (!fs.existsSync(configLocations.getDefaultPath(options.configDir))) {
     writeConsoleLog('error',{component: CONSOLE_LOG_TAG_COMP},"Missing %s, Please run 'edgemicro init'",configLocations.getDefaultPath())
     return cb("Please call edgemicro init first")
   }
-    
+
   defaultConfig = edgeconfig.load({ source: configLocations.getDefaultPath(options.configDir) });
   addEnvVars(defaultConfig);
   deployAuth = deployAuthLib(defaultConfig.edge_config, null)
@@ -115,12 +115,12 @@ Configure.prototype.configure = function configure(options, cb) {
 function configureEdgemicroWithCreds(options, cb) {
   var tasks = [],
     agentConfigPath;
-	
+
   if (options.deployed === false) {
     tasks.push(function (callback) {
       deployAuth.deployWithLeanPayload(options, callback);
     });
-  } 
+  }
 
   tasks.push(
     function (callback) {
@@ -161,7 +161,7 @@ function configureEdgemicroWithCreds(options, cb) {
 
     addEnvVars(agentConfig);
 
-    if (options.deployed === false) {  
+    if (options.deployed === false) {
       agentConfig['edge_config']['jwt_public_key'] = (options.url ? options.url+"/edgemicro-auth/publicKey" : results[0]); // get deploy results
       agentConfig['edge_config'].bootstrap = results[2].bootstrap; // get genkeys results
     } else {
