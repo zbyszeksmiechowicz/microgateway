@@ -4261,9 +4261,9 @@
       "dev": true
     },
     "handlebars": {
-      "version": "4.4.3",
-      "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.4.3.tgz",
-      "integrity": "sha512-B0W4A2U1ww3q7VVthTKfh+epHx+q4mCt6iK+zEAzbMBpWQAwxCeKxEGpj/1oQTpzPXDNSOG7hmG14TsISH50yw==",
+      "version": "4.5.1",
+      "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.5.1.tgz",
+      "integrity": "sha512-C29UoFzHe9yM61lOsIlCE5/mQVGrnIOrOq7maQl76L7tYPCgC1og0Ajt6uWnX4ZTxBPnjw+CUvawphwCfJgUnA==",
       "dev": true,
       "requires": {
         "neo-async": "^2.6.0",
@@ -5872,9 +5872,8 @@
       }
     },
     "microgateway-config": {
-      "version": "3.0.7",
-      "resolved": "https://registry.npmjs.org/microgateway-config/-/microgateway-config-3.0.7.tgz",
-      "integrity": "sha512-n1mlpWQbdRg437+Bkuln77sxdEq5ep20A8E8xzTbTHoEcSmQa59Aqi0nbIaGuZc8MidegtUh3u0rejmRenn50g==",
+      "version": "github:apigee/microgateway-config#7ab13774779cba5a662ded8570fc576cbb17327a",
+      "from": "github:apigee/microgateway-config#for3010",
       "requires": {
         "apigeetool": "^0.10.0",
         "async": "^1.5.2",
@@ -8825,15 +8824,14 @@
       }
     },
     "microgateway-core": {
-      "version": "3.0.7",
-      "resolved": "https://registry.npmjs.org/microgateway-core/-/microgateway-core-3.0.7.tgz",
-      "integrity": "sha512-KLJM1A826voe26zrT0bHYn+Cd5rkzb2PK0YZGY9Mp9si7OOnI4Oa+fo+tDGZoLeyq5a/qQ67U86IPel1TCBzPQ==",
+      "version": "github:apigee/microgateway-core#b51b78bfa1c8aa664f27cc512d133ad5fa4ce520",
+      "from": "github:apigee/microgateway-core#for3010",
       "requires": {
         "async": "~1.5.2",
         "debug": "~3.1.0",
         "helper": "0.0.13",
         "lodash": "^4.17.15",
-        "microgateway-config": "^3.0.7",
+        "microgateway-config": "github:apigee/microgateway-config#for3010",
         "minimatch": "^3.0.4",
         "opentracing": "^0.14.3",
         "request": "~2.87.0",
@@ -9337,9 +9335,9 @@
           }
         },
         "commander": {
-          "version": "2.20.0",
-          "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.0.tgz",
-          "integrity": "sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==",
+          "version": "2.20.3",
+          "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz",
+          "integrity": "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==",
           "optional": true
         },
         "commondir": {
@@ -9980,9 +9978,9 @@
           "integrity": "sha512-d4sze1JNC454Wdo2fkuyzCr6aHcbL6PGGuFAz0Li/NcOm1tCHGnWDRmJP85dh9IhQErTc2svWFEX5xHIOo//kQ=="
         },
         "handlebars": {
-          "version": "4.3.3",
-          "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.3.3.tgz",
-          "integrity": "sha512-VupOxR91xcGojfINrzMqrvlyYbBs39sXIrWa7YdaQWeBudOlvKEGvCczMfJPgnuwHE/zyH1M6J+IUP6cgDVyxg==",
+          "version": "4.5.1",
+          "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.5.1.tgz",
+          "integrity": "sha512-C29UoFzHe9yM61lOsIlCE5/mQVGrnIOrOq7maQl76L7tYPCgC1og0Ajt6uWnX4ZTxBPnjw+CUvawphwCfJgUnA==",
           "requires": {
             "neo-async": "^2.6.0",
             "optimist": "^0.6.1",
@@ -10620,9 +10618,8 @@
           }
         },
         "microgateway-config": {
-          "version": "3.0.7",
-          "resolved": "https://registry.npmjs.org/microgateway-config/-/microgateway-config-3.0.7.tgz",
-          "integrity": "sha512-n1mlpWQbdRg437+Bkuln77sxdEq5ep20A8E8xzTbTHoEcSmQa59Aqi0nbIaGuZc8MidegtUh3u0rejmRenn50g==",
+          "version": "github:apigee/microgateway-config#7ab13774779cba5a662ded8570fc576cbb17327a",
+          "from": "github:apigee/microgateway-config#for3010",
           "requires": {
             "apigeetool": "^0.10.0",
             "async": "^1.5.2",
@@ -15051,12 +15048,12 @@
           "integrity": "sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c="
         },
         "uglify-js": {
-          "version": "3.6.0",
-          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.6.0.tgz",
-          "integrity": "sha512-W+jrUHJr3DXKhrsS7NUVxn3zqMOFn0hL/Ei6v0anCIMoKC93TjcflTagwIHLW7SfMFfiQuktQyFVCFHGUE0+yg==",
+          "version": "3.6.8",
+          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.6.8.tgz",
+          "integrity": "sha512-XhHJ3S3ZyMwP8kY1Gkugqx3CJh2C3O0y8NPiSxtm1tyD/pktLAkFZsFGpuNfTZddKDQ/bbDBLAd2YyA1pbi8HQ==",
           "optional": true,
           "requires": {
-            "commander": "~2.20.0",
+            "commander": "~2.20.3",
             "source-map": "~0.6.1"
           },
           "dependencies": {
@@ -15247,14 +15244,12 @@
       }
     },
     "microgateway-edgeauth": {
-      "version": "3.0.7",
-      "resolved": "https://registry.npmjs.org/microgateway-edgeauth/-/microgateway-edgeauth-3.0.7.tgz",
-      "integrity": "sha512-kyuvDKVdudpU8eZvhu9QEpWPjIT8ft07/SoyooHrd1e3eU6KF0XOPFlyAzfzojVDm43NCFaGN/k/FPNlXK6KRA=="
+      "version": "github:apigee/microgateway-edgeauth#08fd01803d46cf7e45cc65db23e243ea588b1cd7",
+      "from": "github:apigee/microgateway-edgeauth#for3010"
     },
     "microgateway-plugins": {
-      "version": "3.0.10",
-      "resolved": "https://registry.npmjs.org/microgateway-plugins/-/microgateway-plugins-3.0.10.tgz",
-      "integrity": "sha512-P57J3U3fH4Wgt0l0lVXv1qLp4gd8m2PE4JHUhmcxeULgy7AQVIPGmapAdOd4aNykqwbx9+sH/w6MMvz5HNu33A==",
+      "version": "github:apigee/microgateway-plugins#9c351cede61087c5b904597d89bdec4f2469daf7",
+      "from": "github:apigee/microgateway-plugins#for3010",
       "requires": {
         "async": "^1.4.2",
         "debug": "^3.1.0",
@@ -15270,9 +15265,10 @@
         "toobusy-js": "^0.5.1",
         "volos-analytics-apigee": "^0.4.0",
         "volos-cache-memory": "^0.10.0",
-        "volos-quota-apigee": "^0.13.5",
+        "volos-quota-apigee": "^0.13.6",
         "volos-quota-common": "^0.11.9",
         "volos-quota-memory": "^0.11.0",
+        "volos-quota-redis": "^0.11.3",
         "volos-spikearrest-memory": "^0.10.0",
         "xml2js": "^0.4.17"
       },
@@ -16181,9 +16177,9 @@
           "integrity": "sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA=="
         },
         "handlebars": {
-          "version": "4.3.3",
-          "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.3.3.tgz",
-          "integrity": "sha512-VupOxR91xcGojfINrzMqrvlyYbBs39sXIrWa7YdaQWeBudOlvKEGvCczMfJPgnuwHE/zyH1M6J+IUP6cgDVyxg==",
+          "version": "4.5.1",
+          "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.5.1.tgz",
+          "integrity": "sha512-C29UoFzHe9yM61lOsIlCE5/mQVGrnIOrOq7maQl76L7tYPCgC1og0Ajt6uWnX4ZTxBPnjw+CUvawphwCfJgUnA==",
           "requires": {
             "neo-async": "^2.6.0",
             "optimist": "^0.6.1",
@@ -17741,15 +17737,21 @@
           "integrity": "sha1-C6XsKohWQORw6k6FBZcZANrFiCI="
         },
         "uglify-js": {
-          "version": "3.6.0",
-          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.6.0.tgz",
-          "integrity": "sha512-W+jrUHJr3DXKhrsS7NUVxn3zqMOFn0hL/Ei6v0anCIMoKC93TjcflTagwIHLW7SfMFfiQuktQyFVCFHGUE0+yg==",
+          "version": "3.6.8",
+          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.6.8.tgz",
+          "integrity": "sha512-XhHJ3S3ZyMwP8kY1Gkugqx3CJh2C3O0y8NPiSxtm1tyD/pktLAkFZsFGpuNfTZddKDQ/bbDBLAd2YyA1pbi8HQ==",
           "optional": true,
           "requires": {
-            "commander": "~2.20.0",
+            "commander": "~2.20.3",
             "source-map": "~0.6.1"
           },
           "dependencies": {
+            "commander": {
+              "version": "2.20.3",
+              "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz",
+              "integrity": "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==",
+              "optional": true
+            },
             "source-map": {
               "version": "0.6.1",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz",
@@ -17929,9 +17931,9 @@
           }
         },
         "volos-quota-apigee": {
-          "version": "0.13.5",
-          "resolved": "https://registry.npmjs.org/volos-quota-apigee/-/volos-quota-apigee-0.13.5.tgz",
-          "integrity": "sha512-hZI6ODnnca93Ll04QraagguAdaQJ0vz2gGpAV6n8LOIHpqbQdbTDBX7qBvC43b8oQaPL+pdhu5FNDU/x8AWEMA==",
+          "version": "0.13.6",
+          "resolved": "https://registry.npmjs.org/volos-quota-apigee/-/volos-quota-apigee-0.13.6.tgz",
+          "integrity": "sha512-sM9izb+AzaPtC4gT9Cb0y4HAniodjEgeYg0bfsBGjxQLtJHeLrCWjot4xQKlV/+z3fPJ73D/kSDuZNOWePpvpQ==",
           "requires": {
             "apigee-access": ">=1.2.x",
             "debug": "^2.2.0",
@@ -18010,6 +18012,71 @@
               "version": "2.0.0",
               "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
               "integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
+            }
+          }
+        },
+        "volos-quota-redis": {
+          "version": "0.11.3",
+          "resolved": "https://registry.npmjs.org/volos-quota-redis/-/volos-quota-redis-0.11.3.tgz",
+          "integrity": "sha512-0EjHdKS2SZfOF0PMeQnYv76aF9mVNtA+oBLiCx319bdz2XGzqUaiQupEdW8XvkO099Er2DWtdfmpcDiQWG39aw==",
+          "requires": {
+            "debug": "^2.2.0",
+            "redis": "0.10.x",
+            "underscore": "1.6.x",
+            "volos-quota-common": "0.11.x"
+          },
+          "dependencies": {
+            "debug": {
+              "version": "2.6.9",
+              "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+              "integrity": "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==",
+              "requires": {
+                "ms": "2.0.0"
+              }
+            },
+            "ms": {
+              "version": "2.0.0",
+              "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+              "integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
+            },
+            "redis": {
+              "version": "0.10.3",
+              "resolved": "https://registry.npmjs.org/redis/-/redis-0.10.3.tgz",
+              "integrity": "sha1-iSf+IRDuOWF7zz/Te4nY4SORG7Y="
+            },
+            "underscore": {
+              "version": "1.6.0",
+              "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.6.0.tgz",
+              "integrity": "sha1-izixDKze9jM3uLJOT/htRa6lKag="
+            },
+            "volos-quota-common": {
+              "version": "0.11.9",
+              "resolved": "https://registry.npmjs.org/volos-quota-common/-/volos-quota-common-0.11.9.tgz",
+              "integrity": "sha512-hkbUbKLCvltHFIoW37YUz7vkp0GxsjeDBWq7xxmoHpwgtooQ1xdy4ftbVEhGrD+LiGkLf+DQjgrPRu1vZmUV7g==",
+              "requires": {
+                "debug": "^2.2.0",
+                "underscore": "1.6.x"
+              },
+              "dependencies": {
+                "debug": {
+                  "version": "2.6.9",
+                  "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
+                  "integrity": "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==",
+                  "requires": {
+                    "ms": "2.0.0"
+                  }
+                },
+                "ms": {
+                  "version": "2.0.0",
+                  "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
+                  "integrity": "sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g="
+                },
+                "underscore": {
+                  "version": "1.6.0",
+                  "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.6.0.tgz",
+                  "integrity": "sha1-izixDKze9jM3uLJOT/htRa6lKag="
+                }
+              }
             }
           }
         },
@@ -21611,20 +21678,20 @@
       "dev": true
     },
     "uglify-js": {
-      "version": "3.6.1",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.6.1.tgz",
-      "integrity": "sha512-+dSJLJpXBb6oMHP+Yvw8hUgElz4gLTh82XuX68QiJVTXaE5ibl6buzhNkQdYhBlIhozWOC9ge16wyRmjG4TwVQ==",
+      "version": "3.6.8",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.6.8.tgz",
+      "integrity": "sha512-XhHJ3S3ZyMwP8kY1Gkugqx3CJh2C3O0y8NPiSxtm1tyD/pktLAkFZsFGpuNfTZddKDQ/bbDBLAd2YyA1pbi8HQ==",
       "dev": true,
       "optional": true,
       "requires": {
-        "commander": "2.20.0",
+        "commander": "~2.20.3",
         "source-map": "~0.6.1"
       },
       "dependencies": {
         "commander": {
-          "version": "2.20.0",
-          "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.0.tgz",
-          "integrity": "sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==",
+          "version": "2.20.3",
+          "resolved": "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz",
+          "integrity": "sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==",
           "dev": true,
           "optional": true
         },
