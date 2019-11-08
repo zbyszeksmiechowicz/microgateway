@@ -379,22 +379,21 @@ const setup = function setup() {
         .option('-e, --env <env>', 'the environment')
         .option('-u, --username <user>', 'username of the organization admin')
         .option('-p, --password <password>', 'password of the organization admin')
+        .option('-t, --token <token>', 'OAuth token to use with management API')
         .description('generate authentication keys for runtime auth between Microgateway and Edge')
         .action((options) => {
             options.error = optionError(options);
-            if (!options.username) {
-                return options.error('username is required');
-            }
-            if (!options.org) {
-                return options.error('org is required');
-            }
-            if (!options.env) {
-                return options.error('env is required');
-            }
-            promptForPassword(options, (options) => {
-                if (!options.password) {
-                    return options.error('password is required');
+            options.token = options.token || process.env.EDGEMICRO_SAML_TOKEN;
+
+            if (options.token) {
+                //If there is a token lets configure with standard opts.
+                if (!options.org) {
+                    return options.error('org is required');
                 }
+                if (!options.env) {
+                    return options.error('env is required');
+                }
+                options.configDir = options.configDir || process.env.EDGEMICRO_CONFIG_DIR;
                 keyGenerator.generate(options, (err) => {
                     if ( err ) {
                         process.exit(1)
@@ -402,8 +401,30 @@ const setup = function setup() {
                         process.exit(0)
                     }
                 });
-            })
-
+              } else {
+                //If there is no token then we can go through the password process
+                if (!options.username) {
+                    return options.error('username is required');
+                }
+                if (!options.org) {
+                    return options.error('org is required');
+                }
+                if (!options.env) {
+                    return options.error('env is required');
+                }
+                promptForPassword(options, (options) => {
+                    if (!options.password) {
+                        return options.error('password is required');
+                    }
+                    keyGenerator.generate(options, (err) => {
+                        if ( err ) {
+                            process.exit(1)
+                        } else {
+                            process.exit(0)
+                        }
+                    });
+                })
+          }
         });
 
     commander
@@ -591,14 +612,14 @@ const setup = function setup() {
 };
 
 function optionError(caller) {
-    return(((obj) => { 
+    return(((obj) => {
       return((message) => {
         writeConsoleLog('error',{component: CONSOLE_LOG_TAG_COMP},message);
-        obj.help();  
+        obj.help();
       });
      })(caller))
 }
-  
+
 // prompt for a password if it is not specified
 function promptForPassword(options, cb) {
 
