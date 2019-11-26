@@ -280,7 +280,10 @@ Gateway.prototype.reload = (options) => {
                 command: 'reload'
             });
             socket.on('message', (success) => {
-                if (success) {
+                if (typeof success === 'object' && success.message) {
+                    writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP}, success.message);
+                }
+                else if (success) {
                     writeConsoleLog('log',{component: CONSOLE_LOG_TAG_COMP},'Reload Completed Successfully');
                 } else {
                     writeConsoleLog('error',{component: CONSOLE_LOG_TAG_COMP},'Reloading edgemicro was unsuccessful');
